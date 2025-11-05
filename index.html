@@ -106,7 +106,7 @@
         <h3 style="margin:0 0 8px">Профиль по уровням</h3>
         <table class="table" id="bandTable">
           <thead><tr><th>Уровень</th><th>Верно</th><th>Всего</th><th>Точность</th></tr></thead>
-          <tbody></tbody>
+        <tbody></tbody>
         </table>
       </div>
       <div class="result">
@@ -130,20 +130,17 @@
 </div>
 
 <script>
-  // ⛳ Ваш Apps Script Web App URL (уже подставлен)
+  /* ====== AI endpoint (уже подставлен) ====== */
   const AI_ENDPOINT = "https://script.google.com/macros/s/AKfycbyyzBueArpRlxI2xbyHo3lKWv_XQqnNUf1esQqgqTF3mIir2ogng7lFT4aoN4GdJ8Vntw/exec";
 
-  // Предупреждение, если URL не указан
   (function(){
     const warn = document.getElementById('aiWarn');
-    if(!AI_ENDPOINT || !AI_ENDPOINT.includes('/exec')){
-      warn.textContent = "AI-аудит не подключён: вставьте Web App URL (Apps Script) в AI_ENDPOINT.";
-    } else {
-      warn.textContent = "AI подключён. После завершения теста появится AI-аудит.";
-    }
+    warn.textContent = (AI_ENDPOINT && AI_ENDPOINT.includes('/exec'))
+      ? "AI подключён. После завершения теста появится AI-аудит."
+      : "AI-аудит не подключён: вставьте Web App URL (Apps Script) в AI_ENDPOINT.";
   })();
 
-  // ---------- БАНК ВОПРОСОВ (48) ----------
+  /* ====== Банк вопросов (48) ====== */
   const QUESTIONS = [
     {id:"A1-1",level:"A1",q:"Выберите правильный артикль: ___ Tisch.",options:["Der","Die","Das","Den","Не знаю"],answerIdx:0},
     {id:"A1-2",level:"A1",q:"Как перевести: Ich heiße Anna.",options:["Мне нравится Анна","Меня зовут Анна","Я из Анны","Я люблю Анну","Не знаю"],answerIdx:1},
@@ -163,7 +160,7 @@
     {id:"A2-7",level:"A2",q:"Предлоги направления: Ich gehe ___ Schule.",options:["zur","bei der","von der","auf der","Не знаю"],answerIdx:0},
     {id:"A2-8",level:"A2",q:"Правильный артикль в Akkusativ (f): Ich sehe ___ Frau.",options:["die","der","eine","eine Frau","Не знаю"],answerIdx:2},
 
-    {id:"B1-1",level:"B1",q:"Придаточное с weil: Ich bleibe zu Hause, weil ich ___.",options:["bin müde","müde bin","bin der müde","müde ist","Не знаю"],answerIdx:1},
+    {id:"B1-1",level:"B1",q:"Придаточное с weil: Ich bleibe zu Hause, weil ich ___.",options:["bin müde","мüde bin","bin der müde","мüde ist","Не знаю"],answerIdx:1},
     {id:"B1-2",level:"B1",q:"Präteritum модальных: Früher ___ ich nicht gut schwimmen.",options:["kann","konnte","könnte","kannte","Не знаю"],answerIdx:1},
     {id:"B1-3",level:"B1",q:"Относительное: Der Mann, ___ dort steht, ist mein Lehrer.",options:["der","den","dem","dessen","Не знаю"],answerIdx:0},
     {id:"B1-4",level:"B1",q:"Пассив Präsens: Der Brief ___ von ihm geschrieben.",options:["wird","ist geschrieben","wird geschrieben","war geschrieben","Не знаю"],answerIdx:2},
@@ -194,13 +191,13 @@
     {id:"C2-2",level:"C2",q:"«unterstellen» ближе к…",options:["vermuten (с оттенком обвинения)","übergeben","unterstützen","abwarten","Не знаю"],answerIdx:0},
     {id:"C2-3",level:"C2",q:"Контекст: «Er agiert mit Bedacht.»",options:["импульсивно","обдуманно","пассивно","громко","Не знаю"],answerIdx:1},
     {id:"C2-4",level:"C2",q:"«haushaltspolitische Konsolidierung» — это…",options:["рост расходов","сокращение дефицита","рост налоговых льгот","монетизация долга","Не знаю"],answerIdx:1},
-    {id:"C2-5",level:"C2",q:"Замена указ. слова: «Diese Entwicklung, ___ zufolge …»",options:["deren","derer","welcher","wohin","Не знаю"],answerIdx:0},
+    {id:"C2-5",level:"C2",q:"Замена указ. слова: «Diese Entwicklung, ___ zufolge …»",options:["deren","дерer","welcher","wohin","Не знаю"],answerIdx:0},
     {id:"C2-6",level:"C2",q:"«zunehmend heterogen» значит…",options:["всё более неоднородный","всё более однородный","единообразный","несопоставимый","Не знаю"],answerIdx:0},
     {id:"C2-7",level:"C2",q:"Коллокация: «etw. in Erwägung ___»",options:["bringen","nehmen","setzen","stellen","Не знаю"],answerIdx:0},
     {id:"C2-8",level:"C2",q:"«maßgeblich» ближе к…",options:["zufällig","entscheidend","fraglich","überschaubar","Не знаю"],answerIdx:1},
   ];
 
-  // ---------- Состояние/ссылки ----------
+  /* ====== Состояние/ссылки ====== */
   const state = { startedAt:null, current:0, answers:{}, times:{}, qStartAt:null, honesty:false };
   const order = QUESTIONS.map((_,i)=>i), total = order.length;
 
@@ -217,14 +214,14 @@
   function clamp(n,a,b){return Math.max(a,Math.min(b,n))}
   function fmtSec(s){const m=Math.floor(s/60),r=s%60;return `${String(m).padStart(2,'0')}:${String(r).padStart(2,'0')}`}
 
-  // ---------- Запуск ----------
+  /* ====== Запуск ====== */
   startBtn.addEventListener('click',()=>{
     if(!honestyCb.checked){alert('Поставьте галочку о честном прохождении.');return;}
     state.honesty = true; state.startedAt=Date.now(); state.qStartAt=Date.now();
     intro.classList.add('hidden'); test.classList.remove('hidden'); renderCurrent(); tick();
   });
 
-  // ---------- Таймер ----------
+  /* ====== Таймер ====== */
   let tickTimer=null;
   function tick(){
     clearInterval(tickTimer);
@@ -237,7 +234,7 @@
     },1000);
   }
 
-  // ---------- Навигация ----------
+  /* ====== Навигация ====== */
   prevBtn.addEventListener('click',()=>move(-1));
   nextBtn.addEventListener('click',()=>move(1));
   finishBtn.addEventListener('click',()=>finish());
@@ -282,7 +279,7 @@
     finishBtn.classList.toggle('hidden', idx!==total-1);
   }
 
-  // ---------- Подсчёт (антиугадывание) ----------
+  /* ====== Подсчёт (антиугадывание) ====== */
   function scoreReport(){
     const perBand = {A1:[],A2:[],B1:[],B2:[],C1:[],C2:[]};
     let penalized=0, correct=0, wrong=0, skip=0;
@@ -305,11 +302,11 @@
       bandRates[b]={ok,total,rate: total? ok/total : 0};
     });
 
-    // --- ВАРИАНТ B: ВЗВЕШЕННЫЙ УРОВЕНЬ ---
+    // взвешенный индекс
     const bandToIdx = { A1:1, A2:2, B1:3, B2:4, C1:5, C2:6 };
     let num=0, den=0;
     for(const b of Object.keys(bandRates)){
-      const r = bandRates[b].rate; // 0..1
+      const r = bandRates[b].rate;
       num += (bandToIdx[b]||0) * r;
       den += r;
     }
@@ -324,7 +321,7 @@
     }
     const weightedLevel = den ? idxToBand(weightedIdx) : "A0";
 
-    // --- «жёсткий» по порогам (оставляем для сравнения) ---
+    // «жёсткий» по порогам
     const passReq = {A1:.70,A2:.65,B1:.60,B2:.60,C1:.55,C2:.50};
     const orderBands=["A1","A2","B1","B2","C1","C2"];
     let achieved="A0";
@@ -345,9 +342,7 @@
     const norm = clamp((penalized + (QUESTIONS.length*0.33)) / (maxRaw+QUESTIONS.length*0.33), 0,1);
 
     return {
-      achieved, // жёсткий
-      weightedLevel,
-      weightedIdx:+weightedIdx.toFixed(2),
+      achieved, weightedLevel, weightedIdx:+weightedIdx.toFixed(2),
       bandRates, penalized:+penalized.toFixed(2),
       correct, wrong, skip, total: QUESTIONS.length,
       totalSec, avgSec:+avgSec.toFixed(1), reliability:+reliability.toFixed(2),
@@ -367,7 +362,6 @@
     result.classList.remove('hidden');
     const levelBadges={"A1":"Начальный","A2":"Элементарный","B1":"Средний","B2":"Уверенный средний","C1":"Продвинутый","C2":"Владение","A0":"Ниже A1"};
 
-    // показываем взвешенный как главный
     headline.innerHTML = `
       <div class="kpi">
         <span>Взвешенный уровень:</span>
@@ -440,104 +434,70 @@
     }
   }
 
- // ---------- AI-аудит ----------
-async function aiAudit(rawReport) {
-  if (!AI_ENDPOINT || !AI_ENDPOINT.includes('/exec')) {
-    aiStatus.textContent = "AI-аудит не подключён: укажите AI_ENDPOINT вверху файла.";
-    return;
-  }
+  /* ====== AI-аудит ====== */
+  async function aiAudit(rawReport) {
+    if (!AI_ENDPOINT || !AI_ENDPOINT.includes('/exec')) {
+      aiStatus.textContent = "AI-аудит не подключён: укажите AI_ENDPOINT вверху файла.";
+      return;
+    }
 
-  const meta = {
-    version: "1.0",
-    honesty: state.honesty,
-    startedAt: new Date(state.startedAt).toISOString(),
-    finishedAt: new Date().toISOString(),
-    locale: "de-DE",
-    testSpec: { totalQuestions: QUESTIONS.length, penaltyWrong: -0.33, hasIDK: true }
-  };
+    const meta = {
+      version: "1.0",
+      honesty: state.honesty,
+      startedAt: new Date(state.startedAt).toISOString(),
+      finishedAt: new Date().toISOString(),
+      locale: "de-DE",
+      testSpec: { totalQuestions: QUESTIONS.length, penaltyWrong: -0.33, hasIDK: true }
+    };
 
-  let res;
-  try {
-    res = await fetch(AI_ENDPOINT, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain" }, // важно: без preflight
-      body: JSON.stringify({ intent: "final-assess", data: { rawReport, meta } })
-    });
-  } catch (e) {
-    aiStatus.textContent = "AI-аудит: fetch error.";
-    return;
-  }
+    let res;
+    try {
+      res = await fetch(AI_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain" }, // без preflight
+        body: JSON.stringify({ intent: "final-assess", data: { rawReport, meta } })
+      });
+    } catch (e) {
+      aiStatus.textContent = "AI-аудит: fetch error.";
+      return;
+    }
 
-  // Пытаемся разобрать JSON
-  let payload;
-  try {
-    payload = await res.json();
-  } catch (e) {
-    aiStatus.textContent = "AI-аудит: не удалось прочитать JSON.";
-    return;
-  }
+    let payload;
+    try { payload = await res.json(); }
+    catch(e){ aiStatus.textContent = "AI-аудит: не удалось прочитать JSON."; return; }
 
-  // В /v1/responses полезная часть может лежать в .output
-  const out = payload?.output ?? payload;
+    const out = payload?.output ?? payload;
 
-  // Удобный принтер ошибок (не [object Object])
-  const pretty = (x) => {
-    if (x == null) return "unknown";
-    if (typeof x === "string") return x;
-    try { return JSON.stringify(x).slice(0, 300); } catch (_) { return String(x); }
-  };
+    const pretty = (x) => {
+      if (x == null) return "unknown";
+      if (typeof x === "string") return x;
+      try { return JSON.stringify(x).slice(0, 300); } catch (_) { return String(x); }
+    };
 
-  if (!res.ok) {
-    aiStatus.textContent = "AI-аудит HTTP " + res.status + ": " + pretty(out?.error || out);
-    return;
-  }
-  if (!out || out.error) {
-    aiStatus.textContent = "AI-аудит: " + pretty(out?.error || "ошибка ответа");
-    return;
-  }
-
-  // Успех — показываем блок
-  aiStatus.classList.add('hidden');
-  aiBox.classList.remove('hidden');
-
-  const adj = out.adjustments || {};
-  aiBox.innerHTML = `
-    <div class="grid">
-      <div class="kpi"><span>AI-уровень:</span> <span class="v">${sanitize(out.adjustedLevel || "—")}</span></div>
-      <div class="kpi"><span>Доверие AI:</span> <span class="v">${Math.round((out.confidence || 0) * 100)}%</span></div>
-      <div class="kpi"><span>Флаги:</span> <span class="v">${(out.flags || []).map(sanitize).join(', ') || '—'}</span></div>
-    </div>
-    <div class="hr"></div>
-    <div class="small muted">
-      Коррекции по диапазонам (AI): ${["A1","A2","B1","B2","C1","C2"].map(k=>`${k}: ${adj[k] ?? 0}`).join(' · ')}
-    </div>
-    <div style="margin-top:8px">${sanitize(out.rationale || 'Без комментариев.')}</div>
-  `;
-}
-
-// Хелпер для безопасной вставки текста в HTML
-function sanitize(t){
-  return String(t).replace(/[&<>"]/g, s => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[s]));
-}
+    if (!res.ok) { aiStatus.textContent = "AI-аудит HTTP " + res.status + ": " + pretty(out?.error || out); return; }
+    if (!out || out.error) { aiStatus.textContent = "AI-аудит: " + pretty(out?.error || "ошибка ответа"); return; }
 
     aiStatus.classList.add('hidden');
     aiBox.classList.remove('hidden');
+
     const adj = out.adjustments || {};
     aiBox.innerHTML = `
       <div class="grid">
-        <div class="kpi"><span>AI-уровень:</span> <span class="v">${out.adjustedLevel || "—"}</span></div>
-        <div class="kpi"><span>Доверие AI:</span> <span class="v">${Math.round((out.confidence||0)*100)}%</span></div>
-        <div class="kpi"><span>Флаги:</span> <span class="v">${(out.flags||[]).join(', ') || '—'}</span></div>
+        <div class="kpi"><span>AI-уровень:</span> <span class="v">${sanitize(out.adjustedLevel || "—")}</span></div>
+        <div class="kpi"><span>Доверие AI:</span> <span class="v">${Math.round((out.confidence || 0) * 100)}%</span></div>
+        <div class="kpi"><span>Флаги:</span> <span class="v">${(out.flags || []).map(sanitize).join(', ') || '—'}</span></div>
       </div>
       <div class="hr"></div>
-      <div class="small muted">Коррекции по диапазонам (AI): ${
-        ["A1","A2","B1","B2","C1","C2"].map(k=>`${k}: ${adj[k]??0}`).join(' · ')
-      }</div>
-      <div style="margin-top:8px">${sanitize(out.rationale||'Без комментариев.')}</div>
+      <div class="small muted">
+        Коррекции по диапазонам (AI): ${["A1","A2","B1","B2","C1","C2"].map(k=>`${k}: ${adj[k] ?? 0}`).join(' · ')}
+      </div>
+      <div style="margin-top:8px">${sanitize(out.rationale || 'Без комментариев.')}</div>
     `;
   }
 
-  function sanitize(t){return String(t).replace(/[&<>"]/g,s=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[s]))}
+  function sanitize(t){
+    return String(t).replace(/[&<>"]/g, s => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[s]));
+  }
 </script>
 </body>
 </html>
