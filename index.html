@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Тест з німецької мови — рівень A1–C2</title>
+  <title>Німецька мова — адаптивний тест рівня (A1–C2)</title>
   <style>
     :root { --bg:#0b0f19; --panel:#121829; --text:#e6e9f2; --muted:#9aa3b2; --brand:#6ea8fe; --brand-2:#22d3ee; --border:#1f2a44; }
     *{box-sizing:border-box}
@@ -17,7 +17,7 @@
       font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;
       line-height:1.6
     }
-    .wrap{max-width:900px;margin:40px auto;padding:24px}
+    .wrap{max-width:980px;margin:40px auto;padding:24px}
     .card{
       background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01));
       border:1px solid var(--border);
@@ -57,47 +57,34 @@
     .email-badge{margin-left:auto;background:#0e1526;border:1px solid var(--border);padding:6px 10px;border-radius:999px;font-size:12px}
     .signin-wrap{display:flex;align-items:center;gap:12px}
     .warning{background:rgba(255,255,255,.03);border:1px dashed var(--border);padding:10px 12px;border-radius:12px;margin-top:10px;font-size:13px;color:var(--muted)}
-    .two-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-    .slot{background:#0e1526;border:1px dashed #2a3553;border-radius:10px;min-height:44px;display:flex;align-items:center;padding:8px}
-    .draggable{padding:10px 12px;background:#121a33;border:1px solid #2a3553;border-radius:10px;cursor:grab}
-    .row{display:grid;gap:10px;margin:12px 0}
-    .fld{display:flex;gap:10px}
-    .fld input{flex:1;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:#0e1526;color:#e6e9f2}
     .level-badge{display:inline-block;padding:6px 10px;border-radius:999px;border:1px solid var(--border);background:#0e1526;font-weight:700}
+    .passage{border:1px dashed #2a3553;background:#0e1526;border-radius:12px;padding:12px;margin-bottom:12px}
+    .meta{font-size:12px;color:#9aa3b2}
   </style>
-  <!-- Google Identity Services (опціонально) -->
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <!-- SortableJS для order/match -->
-  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 </head>
 <body>
   <div class="wrap">
     <div class="card" id="app">
       <header>
         <div>
-          <h1>Тест з німецької мови — визначення рівня (A1–C2)</h1>
-          <div class="muted">Увійдіть через Google або вкажіть пошту. На проходження — 15 хвилин. Перезапуск заблоковано до завершення таймера.</div>
+          <h1>Адаптивний тест з німецької (CEFR A1–C2)</h1>
+          <div class="muted">15–30 хв, адаптивні блоки. Без повернення назад. Перезапуск заблоковано до завершення таймера.</div>
           <div class="progress"><i id="bar"></i></div>
         </div>
         <div id="userBlock" class="signin-wrap">
-          <div id="g_id_onload"
-               data-client_id="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"
-               data-callback="handleCredentialResponse"
-               data-auto_prompt="false"></div>
-          <div class="g_id_signin" data-type="standard" data-size="medium" data-shape="pill" data-theme="outline" data-logo_alignment="left"></div>
-          <div class="fld" id="manualEmail">
+          <div class="fld" id="manualEmail" style="display:flex;gap:10px">
             <input id="emailInput" type="email" placeholder="ваша_пошта@company.com" />
             <button class="btn" id="startBtn">Старт</button>
           </div>
           <span id="emailBadge" class="email-badge hidden"></span>
-          <span id="timer" class="timer hidden">15:00</span>
+          <span id="timer" class="timer hidden">30:00</span>
         </div>
       </header>
 
       <div class="body" id="stage"></div>
 
       <div class="footer">
-        <div class="muted" id="status">Питання 1 із N</div>
+        <div class="muted" id="status">Завантаження…</div>
         <div>
           <button class="btn" id="restartBtn" title="Скидання заборонено" disabled>Скинути</button>
           <button class="btn" id="nextBtn" disabled>Далі →</button>
@@ -107,168 +94,215 @@
   </div>
 
   <script>
-    // -------- Конфіг: НІЯКИХ зовнішніх вебхуків, локальний підрахунок --------
-    const QUIZ = {
-      title: "Тест з німецької мови (A1–C2)",
-      durationMin: 15,
-      questions: [
-        // 1
-        { type:'single', text:'Wie heißt du?', options:[
-          'Ich heiße Berlin',
-          'Ich heiße Anna',
-          'Du heißt gut',
-          'Mein heißt Auto'
-        ]},
-        // 2
-        { type:'single', text:'Was machst du am Wochenende?', options:[
-          'Ich gehe ins Kino',
-          'Ich bin ein Auto',
-          'Ich sehr gern',
-          'Du schwimmen'
-        ]},
-        // 3
-        { type:'multiple', text:'Welche Wörter sind Artikel im Deutschen?', options:[
-          'der', 'die', 'das', 'den', 'ein'
-        ]},
-        // 4
-        { type:'single', text:'Як німецькою: «Я йду до школи»?', options:[
-          'Ich gehe zur Schule',
-          'Ich kommt Schule',
-          'Ich geh Schule',
-          'Ich fahre Schule'
-        ]},
-        // 5
-        { type:'order', text:'Розташуйте частини речення у правильному порядку: «Ich gehe morgen ins Kino»', items:[
-          'morgen','Ich','ins Kino','gehe'
-        ]},
-        // 6
-        { type:'single', text:'Як утворити Perfekt від «gehen»?', options:[
-          'Ich habe gegangen',
-          'Ich bin gegangen',
-          'Ich geht',
-          'Ich wurde gegangen'
-        ]},
-        // 7
-        { type:'match', text:'Співвіднесіть рівень з описом', left:[
-          'A1','A2','B1','B2','C1','C2'
-        ], right:[
-          'Розуміє і використовує побутові вирази',
-          'Може підтримати коротку розмову',
-          'Може писати листи та читати прості тексти',
-          'Впевнено спілкується на професійні/абстрактні теми',
-          'Високий академічний рівень, складні тексти без труднощів',
-          'Майже як носій мови'
-        ]},
-        // 8
-        { type:'single', text:'Обери граматично правильне речення', options:[
-          'Ich liebe du',
-          'Du liebt mich',
-          'Ich liebe dich',
-          'Dich liebe ichs'
-        ]},
-        // 9
-        { type:'single', text:'Переклад: «Er arbeitet seit fünf Jahren hier.»', options:[
-          'Він працює тут уже п’ять років',
-          'Він працював тут п’ять років',
-          'Він працює через п’ять років',
-          'Він працював би тут п’ять років'
-        ]},
-        // 10
-        { type:'single', text:'Який рівень відповідає можливості дискутувати на професійні теми?', options:[
-          'A2','B1','B2','C2'
-        ]}
-      ],
-      // Еталонні відповіді (локально, без бекенду)
-      answerKey: {
-        // single: індекс правильної опції
-        single: {
-          1: 1, // q1 "Ich heiße Anna"
-          2: 0, // q2 "Ich gehe ins Kino"
-          4: 0, // q4 "Ich gehe zur Schule"
-          6: 1, // q6 "Ich bin gegangen"
-          8: 2, // q8 "Ich liebe dich"
-          9: 0, // q9 переклад
-          10: 2 // q10 B2
-        },
-        // multiple: масив індексів правильних опцій (порядок неважливий)
-        multiple: {
-          3: [0,1,2,3,4] // der, die, das, den, ein — усі артиклі/форми артикля
-        },
-        // order: правильна послідовність (точний збіг рядків)
-        order: {
-          5: ['Ich','gehe','morgen','ins Kino']
-        },
-        // match: відповідність "left -> right" (точний збіг рядків)
-        match: {
-          7: {
-            'A1':'Розуміє і використовує побутові вирази',
-            'A2':'Може підтримати коротку розмову',
-            'B1':'Може писати листи та читати прості тексти',
-            'B2':'Впевнено спілкується на професійні/абстрактні теми',
-            'C1':'Високий академічний рівень, складні тексти без труднощів',
-            'C2':'Майже як носій мови'
-          }
-        }
-      }
+    // ---------------- CONFIG: CEFR, адаптивні блоки ----------------
+    const CONFIG = {
+      durationMin: 30,
+      startLevel: 'B1',
+      blockSize: 6,                // 2 grammar + 2 reading + 2 listening
+      upThreshold: 0.70,           // >=70% в блоці — крок вгору
+      downThreshold: 0.40,         // <40% — крок вниз
+      maxBlocks: 4,                // звичайно 2–4 блоки
+      weights: { grammar: 0.4, reading: 0.3, listening: 0.3 },
+      // CEFR порядок
+      ladder: ['A1','A2','B1','B2','C1','C2']
     };
 
-    // -------- Глобал/DOM --------
+    // ---------------- BANK: прикладові айтеми (MVP). Додавай сюди нові. ----------------
+    // Кожний айтем: { id, skill, level, disc (1..3), type:'single'|'multiple', text, options[], answer, passage? }
+    // ⚠️ Для GitHub Pages MVP audio замінено на коротку сцену/репліку як "listening".
+    const BANK = [
+      // -------- A1 Grammar --------
+      {id:'g_a1_1', skill:'grammar', level:'A1', disc:1, type:'single',
+        text:'Wähle die richtige Form: „Ich ___ aus Prag.“',
+        options:['bin','bist','ist','seid'], answer:0},
+      {id:'g_a1_2', skill:'grammar', level:'A1', disc:1, type:'single',
+        text:'Artikel: ___ Tisch (Nom., Sg.)',
+        options:['die','der','das','den'], answer:1},
+
+      // -------- A2 Grammar --------
+      {id:'g_a2_1', skill:'grammar', level:'A2', disc:1, type:'single',
+        text:'Perfekt von „machen“:',
+        options:['ich bin gemacht','ich habe gemacht','ich wurde machen','ich mache gehabt'], answer:1},
+      {id:'g_a2_2', skill:'grammar', level:'A2', disc:1, type:'single',
+        text:'Präposition + Dativ: „nach ___ Arbeit gehe ich einkaufen.“',
+        options:['die','der','den','dem'], answer:3},
+
+      // -------- B1 Grammar --------
+      {id:'g_b1_1', skill:'grammar', level:'B1', disc:2, type:'single',
+        text:'Konjunktiv II: „Wenn ich mehr Zeit hätte, ___ ich mehr lesen.“',
+        options:['würde','werde','war','muss'], answer:0},
+      {id:'g_b1_2', skill:'grammar', level:'B1', disc:2, type:'single',
+        text:'Nebensatz: „Er bleibt zu Hause, weil er ___ ist.“',
+        options:['krank','ist krank','krank ist','ist'], answer:2},
+
+      // -------- B2 Grammar --------
+      {id:'g_b2_1', skill:'grammar', level:'B2', disc:2, type:'single',
+        text:'Passiv Präsens: „Man baut hier ein Haus.“ → „Hier ___ ein Haus gebaut.“',
+        options:['wird','werden','ist','sei'], answer:0},
+      {id:'g_b2_2', skill:'grammar', level:'B2', disc:2, type:'single',
+        text:'Präpositionen: „abhängig ___ den Ergebnissen“',
+        options:['an','von','mit','zu'], answer:1},
+
+      // -------- C1 Grammar --------
+      {id:'g_c1_1', skill:'grammar', level:'C1', disc:3, type:'single',
+        text:'Nominalisierung: „weil er krank ist“ → „___ seiner Krankheit“',
+        options:['trotz','aufgrund','wegen','während'], answer:2},
+      {id:'g_c1_2', skill:'grammar', level:'C1', disc:3, type:'single',
+        text:'Satzbau: „Er hat es gestern nicht geschafft, pünktlich anzukommen.“ Правильно?',
+        options:['Так','Ні (некоректний порядок)','Так, але краще вживати Konjunktiv','Ні, дієслово у формі falsch'], answer:0},
+
+      // -------- C2 Grammar --------
+      {id:'g_c2_1', skill:'grammar', level:'C2', disc:3, type:'single',
+        text:'Stilistisch: „Es ist durchaus plausibel, dass…“ — яке найближче нейтральне перефразування?',
+        options:['Es ist sehr möglich, dass…','Man sagt, dass…','Es muss so sein, dass…','Es ist unsicher, ob…'], answer:0},
+      {id:'g_c2_2', skill:'grammar', level:'C2', disc:3, type:'single',
+        text:'Feinheit: Вкажіть найдоречнішу сполучуваність: „eine Hypothese ___“',
+        options:['machen','setzen','aufstellen','stellen'], answer:2},
+
+      // -------- Reading A1–C2 --------
+      {id:'r_a1_1', skill:'reading', level:'A1', disc:1, type:'single',
+        passage:'Hallo! Ich bin Anna. Ich komme aus Polen und wohne in Brno. Ich lerne Deutsch.',
+        text:'Wo wohnt Anna?', options:['in Prag','in Brno','in Wien','in Berlin'], answer:1},
+      {id:'r_a2_1', skill:'reading', level:'A2', disc:1, type:'single',
+        passage:'Der Supermarkt öffnet um 7 Uhr und schließt um 21 Uhr. Am Sonntag ist er geschlossen.',
+        text:'Wann ist der Supermarkt geöffnet?', options:['7–19','7–21','8–20','9–21'], answer:1},
+      {id:'r_b1_1', skill:'reading', level:'B1', disc:2, type:'single',
+        passage:'Der Bewerber verfügt über drei Jahre Erfahrung im Vertrieb und spricht fließend Englisch.',
+        text:'Worüber verfügt der Bewerber?', options:['über Studium','über drei Jahre Erfahrung','über Führerschein','über Praktikum'], answer:1},
+      {id:'r_b2_1', skill:'reading', level:'B2', disc:2, type:'single',
+        passage:'Die Studie legt nahe, dass regelmäßige Bewegung kognitive Funktionen langfristig verbessert.',
+        text:'Was legt die Studie nahe?', options:['Bewegung schadet','Nur kurzfristige Effekte','Verbesserung kognitiver Funktionen','Kein Zusammenhang'], answer:2},
+      {id:'r_c1_1', skill:'reading', level:'C1', disc:3, type:'single',
+        passage:'Obgleich die Datenlage heterogen ist, konvergieren die Befunde hinsichtlich der Wirksamkeit.',
+        text:'„konvergieren die Befunde“ bedeutet…', options:['Sie widersprechen sich','Sie nähern sich an','Sie sind unbrauchbar','Sie fehlen'], answer:1},
+      {id:'r_c2_1', skill:'reading', level:'C2', disc:3, type:'single',
+        passage:'Die Autorin dekonstruiert gängige Narrative, indem sie implizite Prämissen freilegt.',
+        text:'Was tut die Autorin?', options:['Sie erzählt Geschichten','Sie bestätigt Narrative','Sie legt verborgene Annahmen offen','Sie ignoriert Prämissen'], answer:2},
+
+      // -------- Listening A1–C2 (текстова сцена як сурогат аудіо) --------
+      {id:'l_a1_1', skill:'listening', level:'A1', disc:1, type:'single',
+        passage:'(Am Bahnhof) — Entschuldigung, wann fährt der Zug nach Wien? — Um zehn Uhr, Gleis 3.',
+        text:'Wohin fährt der Zug?', options:['nach Berlin','nach Wien','nach Prag','nach Linz'], answer:1},
+      {id:'l_a2_1', skill:'listening', level:'A2', disc:1, type:'single',
+        passage:'— Ich suche die Apotheke. — Geradeaus und dann links.',
+        text:'Wo ist die Apotheke?', options:['rechts','geradeaus und links','zurück','oben'], answer:1},
+      {id:'l_b1_1', skill:'listening', level:'B1', disc:2, type:'single',
+        passage:'— Ich arbeite seit fünf Jahren hier und kümmere mich um internationale Kunden.',
+        text:'Wie lange arbeitet die Person dort?', options:['seit drei Jahren','seit fünf Jahren','seit zehn Jahren','seit einem Jahr'], answer:1},
+      {id:'l_b2_1', skill:'listening', level:'B2', disc:2, type:'single',
+        passage:'— Wir implementieren derzeit ein neues CRM-System, um die Prozesse zu konsolidieren.',
+        text:'Wozu wird das CRM-System implementiert?', options:['zur Kündigung','zur Konsolidierung der Prozesse','zur Werbung','für HR'], answer:1},
+      {id:'l_c1_1', skill:'listening', level:'C1', disc:3, type:'single',
+        passage:'— Der Bericht problematisiert die methodische Stichhaltigkeit früherer Untersuchungen.',
+        text:'Was tut der Bericht?', options:['Er lobt alle Untersuchungen','Er ignoriert Methodenfragen','Er stellt die Stichhaltigkeit in Frage','Er wiederholt Ergebnisse'], answer:2},
+      {id:'l_c2_1', skill:'listening', level:'C2', disc:3, type:'single',
+        passage:'— Angesichts der Evidenz halte ich die These nur bedingt tragfähig.',
+        text:'Wie bewertet der Sprecher die These?', options:['voll tragfähig','bedingt tragfähig','gar nicht tragfähig','überragend'], answer:1},
+    ];
+
+    // ---------------- STATE ----------------
+    const LS = { email:'lang_email', end:'lang_end', idx:'lang_idx', answers:'lang_answers', plan:'lang_plan', start:'lang_start' };
     const stage = document.getElementById('stage');
+    const statusEl = document.getElementById('status');
     const nextBtn = document.getElementById('nextBtn');
     const restartBtn = document.getElementById('restartBtn');
-    const statusEl = document.getElementById('status');
-    const bar = document.getElementById('bar');
     const emailBadge = document.getElementById('emailBadge');
     const timerEl = document.getElementById('timer');
     const startBtn = document.getElementById('startBtn');
     const emailInput = document.getElementById('emailInput');
+    const bar = document.getElementById('bar');
 
-    const LS = { email:'quiz_user_email', end:'quiz_end_ts', idx:'quiz_idx', data:'quiz_answers', start:'quiz_start_ts' };
-
-    let order = [...Array(QUIZ.questions.length).keys()];
+    let plan = [];     // послідовність питань (об’єкти BANK) сформована блоками
     let idx = 0;
-    let answers = []; // [{index, type, picked}]
+    let answers = [];  // [{id, picked:[...] }]
+    let currentBlock = 0;
+    let currentLevel = CONFIG.startLevel;
 
-    // -------- Вхід: Google або вручну --------
-    window.handleCredentialResponse = function(res){
-      try { const payload = parseJwt(res.credential); const email = payload.email; if(!email) throw new Error(); lockAndStart(email); }
-      catch(e){ alert('Помилка входу через Google. Можна вказати пошту вручну.'); }
+    // ---------------- HELPERS ----------------
+    const shuffle = (arr)=>arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
+    const levelUp = (lvl)=>CONFIG.ladder[Math.min(CONFIG.ladder.indexOf(lvl)+1, CONFIG.ladder.length-1)];
+    const levelDown = (lvl)=>CONFIG.ladder[Math.max(CONFIG.ladder.indexOf(lvl)-1, 0)];
+    const fmtTime = (ms)=> {
+      const m = String(Math.floor(ms/60000)).padStart(2,'0');
+      const s = String(Math.floor((ms%60000)/1000)).padStart(2,'0');
+      return `${m}:${s}`;
     };
-    startBtn.addEventListener('click', () => {
+
+    function pickBlock(level){
+      // 2 grammar + 2 reading + 2 listening із вказаного level
+      const by = (skill)=>BANK.filter(x=>x.level===level && x.skill===skill);
+      const pick = (arr, n)=>shuffle(arr).slice(0, Math.min(n, arr.length));
+      return [
+        ...pick(by('grammar'), 2),
+        ...pick(by('reading'), 2),
+        ...pick(by('listening'), 2),
+      ];
+    }
+
+    function buildPlan(){
+      // Перший блок — B1, далі будемо додавати після оцінки блоку (lazy)
+      const first = pickBlock(currentLevel);
+      plan = [...first];
+      currentBlock = 1;
+      localStorage.setItem(LS.plan, JSON.stringify(plan));
+    }
+
+    function ensureNextBlock(){
+      // якщо ще не досягнуто maxBlocks — додати блок для currentLevel
+      if(currentBlock >= CONFIG.maxBlocks) return;
+      const extra = pickBlock(currentLevel);
+      plan = [...plan, ...extra];
+      currentBlock++;
+      localStorage.setItem(LS.plan, JSON.stringify(plan));
+    }
+
+    function interpretCEFR(score){
+      if (score < 30) return 'A1';
+      if (score < 50) return 'A2';
+      if (score < 70) return 'B1';
+      if (score < 85) return 'B2';
+      if (score < 95) return 'C1';
+      return 'C2';
+    }
+
+    function corridor(main){
+      const i = CONFIG.ladder.indexOf(main);
+      const low = CONFIG.ladder[Math.max(0, i-1)];
+      const high = CONFIG.ladder[Math.min(CONFIG.ladder.length-1, i+1)];
+      return (low===main && high===main) ? main : `${low}–${high}`;
+    }
+
+    // ---------------- AUTH / START ----------------
+    startBtn.addEventListener('click', ()=>{
       const email = (emailInput.value||'').trim();
       if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { alert('Укажіть коректну робочу пошту'); return; }
       lockAndStart(email);
     });
 
-    function parseJwt(token){
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g,'+').replace(/_/g,'/');
-      const json = decodeURIComponent(atob(base64).split('').map(c=>'%' + ('00'+c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-      return JSON.parse(json);
-    }
-
     function lockAndStart(email){
-      const existingEmail = localStorage.getItem(LS.email);
+      const e2 = localStorage.getItem(LS.email);
       const endTs = +localStorage.getItem(LS.end) || 0;
       const now = Date.now();
-      if(existingEmail && endTs && now < endTs && existingEmail !== email){
-        alert('Тест уже запущено під іншим аккаунтом і не може бути скинуто до завершення часу.');
-        return;
-      }
+      if(e2 && endTs && now<endTs && e2!==email){ alert('Сесія вже запущена під іншим email до завершення таймера.'); return; }
+
       localStorage.setItem(LS.email, email);
       emailBadge.textContent = email; emailBadge.classList.remove('hidden');
-      document.querySelector('.g_id_signin')?.classList.add('hidden');
       document.getElementById('manualEmail')?.classList.add('hidden');
 
       if(!localStorage.getItem(LS.end)){
-        const end = now + QUIZ.durationMin*60*1000;
+        const end = now + CONFIG.durationMin*60*1000;
         localStorage.setItem(LS.end, String(end));
         localStorage.setItem(LS.start, String(now));
         localStorage.setItem(LS.idx, '0');
-        localStorage.setItem(LS.data, JSON.stringify([]));
+        localStorage.setItem(LS.answers, JSON.stringify([]));
+        currentLevel = CONFIG.startLevel;
+        buildPlan();
+      } else {
+        plan = JSON.parse(localStorage.getItem(LS.plan) || '[]');
+        if(!plan.length){ currentLevel = CONFIG.startLevel; buildPlan(); }
       }
       idx = +(localStorage.getItem(LS.idx) || '0');
-      answers = JSON.parse(localStorage.getItem(LS.data) || '[]');
+      answers = JSON.parse(localStorage.getItem(LS.answers) || '[]');
       timerEl.classList.remove('hidden');
       tickTimer();
       render();
@@ -279,210 +313,805 @@
       const endTs = +localStorage.getItem(LS.end) || 0;
       if(email && endTs){
         emailBadge.textContent = email; emailBadge.classList.remove('hidden');
-        document.querySelector('.g_id_signin')?.classList.add('hidden');
         document.getElementById('manualEmail')?.classList.add('hidden');
         timerEl.classList.remove('hidden');
+        plan = JSON.parse(localStorage.getItem(LS.plan) || '[]');
+        if(!plan.length){ currentLevel = CONFIG.startLevel; buildPlan(); }
         idx = +(localStorage.getItem(LS.idx) || '0');
-        answers = JSON.parse(localStorage.getItem(LS.data) || '[]');
+        answers = JSON.parse(localStorage.getItem(LS.answers) || '[]');
         tickTimer();
         render();
       } else {
-        stage.innerHTML = '<div class="warning">Увійдіть через Google або вкажіть робочу пошту, щоб почати. Після старту таймер запуститься на 15 хвилин, а скидання буде недоступне.</div>';
-        statusEl.textContent = 'Авторизуйтеся, щоб почати';
+        stage.innerHTML = '<div class="warning">Вкажіть робочу пошту та натисніть «Старт». Після старту таймер запуститься на 30 хвилин, повернення до попередніх питань недоступне.</div>';
+        statusEl.textContent = 'Готово до старту';
       }
     })();
 
-    // -------- Рендер --------
+    // ---------------- RENDER ----------------
     function updateProgress(){
-      const total = order.length;
-      statusEl.textContent = `Питання ${Math.min(idx+1,total)} із ${total}`;
-      bar.style.width = `${(idx/total)*100}%`;
+      const total = plan.length;
+      statusEl.textContent = `Питання ${Math.min(idx+1,total)} із ${total || '?'}`;
+      bar.style.width = total ? `${(idx/total)*100}%` : '0%';
     }
 
     function render(){
       updateProgress();
       nextBtn.disabled = true;
       stage.innerHTML = '';
-      if(idx >= order.length){ return renderResultLocal(); }
 
-      const q = QUIZ.questions[order[idx]];
+      // Кінець тесту, якщо вичерпано план або час
+      if(idx >= plan.length){
+        return renderResult();
+      }
+
+      const q = plan[idx];
       const block = document.createElement('div');
+
+      // PASSAGE (для reading/listening)
+      if(q.passage){
+        const m = document.createElement('div');
+        m.className = 'meta';
+        m.textContent = `${q.skill.toUpperCase()} • рівень ${q.level}`;
+        block.appendChild(m);
+
+        const p = document.createElement('div');
+        p.className = 'passage';
+        p.textContent = q.passage;
+        block.appendChild(p);
+      }
+
       const h = document.createElement('h2'); h.className='q-title'; h.textContent = q.text; block.appendChild(h);
       const note = document.createElement('div'); note.className='q-note muted';
-      note.textContent =
-        q.type==='match' ? 'Перетягніть картки праворуч у відповідні слоти ліворуч' :
-        q.type==='order' ? 'Перетягніть пункти, щоб виставити порядок' :
-        q.type==='multiple' ? 'Можна обрати кілька варіантів' :
-        'Оберіть один варіант';
+      note.textContent = (q.type==='multiple' ? 'Можна обрати кілька варіантів' : 'Оберіть один варіант');
       block.appendChild(note);
 
       const options = document.createElement('div'); options.className='options';
+      const indices = shuffle(q.options.map((_,i)=>i)); // перемішування варіантів
+      indices.forEach((i)=>{
+        const label=document.createElement('label'); label.className='opt';
+        const input=document.createElement('input'); input.type=(q.type==='multiple')?'checkbox':'radio'; input.name='q'; input.value=i;
+        const span=document.createElement('span'); span.textContent=q.options[i];
+        label.appendChild(input); label.appendChild(span); options.appendChild(label);
+      });
+      block.appendChild(options);
+      stage.appendChild(block);
 
-      if(q.type==='single' || q.type==='multiple'){
-        const isMulti = q.type==='multiple';
-        q.options.forEach((opt,i)=>{
-          const label=document.createElement('label'); label.className='opt';
-          const input=document.createElement('input'); input.type=isMulti?'checkbox':'radio'; input.name='q'; input.value=i;
-          const span=document.createElement('span'); span.textContent=opt;
-          label.appendChild(input); label.appendChild(span); options.appendChild(label);
-        });
-      }
-      if(q.type==='order'){
-        const list = document.createElement('div'); list.id='orderList'; list.className='options';
-        q.items.forEach(txt=>{ const d=document.createElement('div'); d.className='draggable'; d.textContent=txt; list.appendChild(d); });
-        options.appendChild(list); new Sortable(list,{animation:150});
-      }
-      if(q.type==='match'){
-        const wrap = document.createElement('div'); wrap.className='two-cols';
-        const leftCol = document.createElement('div'); const rightCol = document.createElement('div');
-        q.left.forEach(l=>{ const slot=document.createElement('div'); slot.className='slot'; slot.setAttribute('data-left',l); slot.textContent=l+' — '; leftCol.appendChild(slot); });
-        const pool=document.createElement('div'); pool.id='matchPool'; pool.className='options';
-        q.right.forEach(r=>{ const it=document.createElement('div'); it.className='draggable'; it.textContent=r; it.setAttribute('data-right',r); pool.appendChild(it); });
-        rightCol.appendChild(pool); wrap.appendChild(leftCol); wrap.appendChild(rightCol); options.appendChild(wrap);
-        new Sortable(pool,{group:'m',animation:150});
-        leftCol.querySelectorAll('.slot').forEach(s=>{ new Sortable(s,{group:'m',animation:150,put:true,sort:true}); });
-      }
+      const checkReady = ()=>{
+        nextBtn.disabled = (q.type==='multiple')
+          ? options.querySelectorAll('input:checked').length===0
+          : !options.querySelector('input:checked');
+      };
+      options.addEventListener('change', checkReady);
+      checkReady();
 
-      block.appendChild(options); stage.appendChild(block);
-
-      if(q.type==='single'){
-        options.addEventListener('change', ()=>{ nextBtn.disabled = !options.querySelector('input:checked'); });
-      } else if(q.type==='multiple'){
-        options.addEventListener('change', ()=>{ nextBtn.disabled = options.querySelectorAll('input:checked').length === 0; });
-      } else {
-        nextBtn.disabled = false; // order / match
-      }
-
-      nextBtn.onclick = () => saveAndNext();
-      restartBtn.onclick = () => {};
-
-      function saveAndNext(){
-        let picked;
-        if(q.type==='single'){
-          const sel = options.querySelector('input:checked'); picked = sel ? [ +sel.value ] : [];
-        } else if(q.type==='multiple'){
+      nextBtn.onclick = () => {
+        let picked = [];
+        if(q.type==='multiple'){
           picked = [...options.querySelectorAll('input:checked')].map(i=>+i.value);
-        } else if(q.type==='order'){
-          picked = Array.from(options.querySelectorAll('#orderList .draggable')).map(el=>el.textContent);
-        } else if(q.type==='match'){
-          picked = {}; options.querySelectorAll('.slot').forEach(slot=>{
-            const l=slot.getAttribute('data-left'); const it=slot.querySelector('.draggable');
-            picked[l] = it ? it.getAttribute('data-right') : '';
-          });
+        } else {
+          const sel = options.querySelector('input:checked');
+          picked = sel ? [ +sel.value ] : [];
         }
-        const record = { index: order[idx], type: q.type, picked };
-        answers[idx] = record;
-        localStorage.setItem(LS.data, JSON.stringify(answers));
+        answers[idx] = { id:q.id, picked };
+        localStorage.setItem(LS.answers, JSON.stringify(answers));
         idx++; localStorage.setItem(LS.idx, String(idx));
-        render();
-      }
-    }
 
-    // -------- Підрахунок і результат (локально) --------
-    function arraysEqual(a,b){
-      if(a.length!==b.length) return false;
-      for(let i=0;i<a.length;i++){ if(a[i]!==b[i]) return false; }
-      return true;
-    }
-    function setsEqual(a,b){
-      if(a.length!==b.length) return false;
-      const sA=new Set(a), sB=new Set(b);
-      for(const x of sA){ if(!sB.has(x)) return false; }
-      return true;
-    }
-    function matchEqual(pickedObj, correctObj){
-      const keys = Object.keys(correctObj);
-      for(const k of keys){
-        const pv = (pickedObj[k]||'').trim();
-        const cv = (correctObj[k]||'').trim();
-        if(pv!==cv) return false;
-      }
-      return true;
-    }
-    function interpretLevel(percent){
-      if (percent < 30) return "A1 — початковий";
-      if (percent < 50) return "A2 — базовий";
-      if (percent < 70) return "B1 — середній";
-      if (percent < 85) return "B2 — вище середнього";
-      if (percent < 95) return "C1 — просунутий";
-      return "C2 — майже носій";
-    }
-
-    function localCheckBreakdown(){
-      // Повертає масив {id, ok} для кожного питання
-      const breakdown = [];
-      const qCount = QUIZ.questions.length;
-      for(let i=0;i<qCount;i++){
-        const rec = answers[i];
-        const qIdx = (rec?.index ?? i) + 1;
-        const type = rec?.type;
-        let ok = false;
-        if(rec && type==='single'){
-          const correct = QUIZ.answerKey.single[qIdx];
-          const picked = (rec.picked||[])[0];
-          ok = (picked === correct);
-        } else if(rec && type==='multiple'){
-          const correct = QUIZ.answerKey.multiple[qIdx] || [];
-          const picked = rec.picked || [];
-          ok = setsEqual(picked, correct);
-        } else if(rec && type==='order'){
-          const correct = QUIZ.answerKey.order[qIdx] || [];
-          const picked = rec.picked || [];
-          ok = arraysEqual(picked, correct);
-        } else if(rec && type==='match'){
-          const correct = QUIZ.answerKey.match[qIdx] || {};
-          const picked = rec.picked || {};
-          ok = matchEqual(picked, correct);
+        // після кожного блоку приймаємо рішення про рівень та добудову плану
+        const inBlock = idx % CONFIG.blockSize;
+        if(inBlock === 0){
+          evaluateBlockAndRoute();
+          ensureNextBlock();
         }
-        breakdown.push({ id:`q${qIdx}`, ok });
-      }
-      return breakdown;
+
+        render();
+      };
+      restartBtn.onclick = ()=>{};
     }
 
-    function renderResultLocal(){
+    // ---------------- SCORING ----------------
+    function scoreQuestion(q, picked){
+      // Порівнюємо індекси (picked — в перетасованій нумерації, але answer даний для ориг. індекса)
+      // Ми зберігаємо picked у вигляді індексів з поточного рендера (які дорівнюють індексам в q.options після shuffle),
+      // але оскільки ми брали answer за оригіналом — треба зіставити по значенню тексту.
+      // Просте рішення: визначити, які тексти обрані, і порівняти з правильним текстом.
+      const correctText = q.options[q.answer];
+      if(q.type==='single'){
+        if(!picked.length) return 0;
+        const chosenText = q.options[picked[0]];
+        return (chosenText === correctText) ? 1 : 0;
+      } else {
+        // multiple — у цьому MVP не використовується (в банку всі single), але залишаємо реалізацію.
+        const correctSet = new Set(Array.isArray(q.answer) ? q.answer.map(i=>q.options[i]) : [correctText]);
+        const chosenSet  = new Set(picked.map(i=>q.options[i]));
+        if(correctSet.size !== chosenSet.size) return 0;
+        for(const v of correctSet){ if(!chosenSet.has(v)) return 0; }
+        return 1;
+      }
+    }
+
+    function evaluateBlockAndRoute(){
+      const start = idx - CONFIG.blockSize;
+      const end = idx;
+      const slice = plan.slice(start, end);
+      const ansSlice = answers.slice(start, end);
+
+      // підрахунок %
+      let correct = 0;
+      let g=0, r=0, l=0, gOk=0, rOk=0, lOk=0;
+
+      for(let i=0;i<slice.length;i++){
+        const q = slice[i];
+        const a = ansSlice[i] || {picked:[]};
+        const ok = scoreQuestion(q, a.picked);
+        correct += ok;
+        if(q.skill==='grammar'){ g++; gOk+=ok; }
+        if(q.skill==='reading'){ r++; rOk+=ok; }
+        if(q.skill==='listening'){ l++; lOk+=ok; }
+      }
+      const perc = correct / slice.length;
+
+      // роутинг
+      if(perc >= CONFIG.upThreshold){ currentLevel = levelUp(currentLevel); }
+      else if(perc < CONFIG.downThreshold){ currentLevel = levelDown(currentLevel); }
+      // інакше — залишаємо рівень
+
+      // зберегти проміжну метрику для підсумку
+      const hist = JSON.parse(localStorage.getItem('block_hist')||'[]');
+      hist.push({
+        block: hist.length+1,
+        levelAtStart: (hist.length? hist[hist.length-1].nextLevel : CONFIG.startLevel),
+        resultPercent: Math.round(perc*100),
+        nextLevel: currentLevel,
+        detail: { grammar:[gOk,g], reading:[rOk,r], listening:[lOk,l] }
+      });
+      localStorage.setItem('block_hist', JSON.stringify(hist));
+    }
+
+    // ---------------- RESULT ----------------
+    function renderResult(){
       bar.style.width = '100%';
-      const breakdown = localCheckBreakdown();
-      const totalOk = breakdown.filter(b=>b.ok).length;
-      const total = QUIZ.questions.length;
-      const percent = Math.round((totalOk/total)*100);
-      const levelText = interpretLevel(percent);
+
+      // Загальний скоринг по секціях
+      let total=plan.length, ok=0;
+      let g=0, r=0, l=0, gOk=0, rOk=0, lOk=0;
+      for(let i=0;i<plan.length;i++){
+        const q = plan[i];
+        const a = answers[i] || {picked:[]};
+        const s = scoreQuestion(q, a.picked);
+        ok += s;
+        if(q.skill==='grammar'){ g++; gOk+=s; }
+        if(q.skill==='reading'){ r++; rOk+=s; }
+        if(q.skill==='listening'){ l++; lOk+=s; }
+      }
+      const gp = g? gOk/g : 0, rp = r? rOk/r : 0, lp = l? lOk/l : 0;
+      const weighted = gp*CONFIG.weights.grammar + rp*CONFIG.weights.reading + lp*CONFIG.weights.listening;
+      const percent = Math.round(weighted*100);
+      const main = interpretCEFR(percent);
+      const band = corridor(main);
+
+      // історія блоків
+      const hist = JSON.parse(localStorage.getItem('block_hist')||'[]');
 
       stage.innerHTML = `
-        <h2>Ваш рівень: <span class="level-badge">${levelText}</span></h2>
-        <div class="muted">Дякуємо за проходження тесту! Нижче — короткі підсумки.</div>
+        <h2>Ваш рівень: <span class="level-badge">${main}</span> <span class="muted">(коридор: ${band})</span></h2>
+        <div class="muted">Дякуємо! Нижче — підсумки та секційний розклад.</div>
         <div class="kpis">
-          <div class="kpi"><b>${totalOk}/${total}</b><div class="muted">Правильних</div></div>
-          <div class="kpi"><b>${percent}%</b><div class="muted">Відсоток</div></div>
+          <div class="kpi"><b>${percent}%</b><div class="muted">Зважений відсоток</div></div>
+          <div class="kpi"><b>${ok}/${total}</b><div class="muted">Правильних</div></div>
           <div class="kpi"><b>${timeTaken()}</b><div class="muted">Час</div></div>
         </div>
-        <table class="table">
-          <thead><tr><th>#</th><th>Тип</th><th>Статус</th></tr></thead>
-          <tbody id="rows"></tbody>
+
+        <table class="table" style="margin-top:8px">
+          <thead><tr><th>Секція</th><th>Баланс</th><th>Точність</th><th>Вага</th></tr></thead>
+          <tbody>
+            <tr><td>Grammar/Vocab</td><td>${gOk}/${g}</td><td>${Math.round(gp*100)}%</td><td>${CONFIG.weights.grammar}</td></tr>
+            <tr><td>Reading</td><td>${rOk}/${r}</td><td>${Math.round(rp*100)}%</td><td>${CONFIG.weights.reading}</td></tr>
+            <tr><td>Listening</td><td>${lOk}/${l}</td><td>${Math.round(lp*100)}%</td><td>${CONFIG.weights.listening}</td></tr>
+          </tbody>
         </table>
-        <div class="warning">Тест заблоковано — перезапуск буде доступний після завершення таймера.</div>
+
+        <h3 style="margin-top:18px">Хід тесту (блоки)</h3>
+        <table class="table">
+          <thead><tr><th>#</th><th>Рівень на старті</th><th>Результат блоку</th><th>Наступний рівень</th><th>Деталі</th></tr></thead>
+          <tbody id="blocks"></tbody>
+        </table>
+
+        <div class="warning" style="margin-top:12px">
+          Рекомендація: для підтвердження рівня додайте коротке письмове завдання (5–7 хв) та/або голосову відповідь (60–90 сек).
+        </div>
       `;
-      const rows = document.getElementById('rows');
-      breakdown.forEach((b,i)=>{
-        const q = QUIZ.questions[i];
+
+      const blocks = document.getElementById('blocks');
+      hist.forEach((b,i)=>{
         const tr = document.createElement('tr');
+        const d = b.detail;
         tr.innerHTML = `
           <td>${i+1}</td>
-          <td>${q.type}</td>
-          <td>${b.ok?'<span class="pill ok">вірно</span>':'<span class="pill bad">помилка</span>'}</td>
+          <td>${b.levelAtStart}</td>
+          <td>${b.resultPercent}%</td>
+          <td>${b.nextLevel}</td>
+          <td class="muted">G: ${d.grammar[0]}/${d.grammar[1]} • R: ${d.reading[0]}/${d.reading[1]} • L: ${d.listening[0]}/${d.listening[1]}</td>
         `;
-        rows.appendChild(tr);
+        blocks.appendChild(tr);
       });
+
+      // блокування перезапуску до кінця таймера зберігаємо
     }
 
-    // -------- Таймер --------
+    // ---------------- TIMER ----------------
     function tickTimer(){
       const end = +localStorage.getItem(LS.end) || 0;
       if(!end) return;
       const left = Math.max(0, end - Date.now());
-      const mm = String(Math.floor(left/60000)).padStart(2,'0');
-      const ss = String(Math.floor((left%60000)/1000)).padStart(2,'0');
-      timerEl.textContent = `${mm}:${ss}`;
-      if(left<=0){ idx = order.length; localStorage.setItem(LS.idx, String(idx)); render(); return; }
+      timerEl.textContent = fmtTime(left);
+      if(left<=0){
+        idx = plan.length; localStorage.setItem(LS.idx, String(idx));
+        render();
+        return;
+      }
+      setTimeout(tickTimer, 250);
+    }
+    function timeTaken(){
+      const start = +localStorage.getItem(LS.start) || Date.now();
+      const s = Math.max(0, Math.floor((Date.now()-start)/1000));
+      const mm = String(Math.floor(s/60)).padStart(2,'0');
+      const ss = String(s%60).padStart(2,'0');
+      return `${mm}:${ss}`;
+    }
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Німецька мова — адаптивний тест рівня (A1–C2)</title>
+  <style>
+    :root { --bg:#0b0f19; --panel:#121829; --text:#e6e9f2; --muted:#9aa3b2; --brand:#6ea8fe; --brand-2:#22d3ee; --border:#1f2a44; }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:
+        radial-gradient(1200px 600px at 10% -10%, rgba(34,211,238,.08), transparent),
+        radial-gradient(1200px 600px at 90% 110%, rgba(110,168,254,.08), transparent),
+        var(--bg);
+      color:var(--text);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;
+      line-height:1.6
+    }
+    .wrap{max-width:980px;margin:40px auto;padding:24px}
+    .card{
+      background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01));
+      border:1px solid var(--border);
+      backdrop-filter:blur(8px);
+      border-radius:18px;
+      box-shadow:0 12px 40px rgba(0,0,0,.35);
+      overflow:hidden
+    }
+    header{padding:22px 22px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+    h1{font-size:22px;margin:0;letter-spacing:.2px}
+    .muted{color:var(--muted);font-size:14px}
+    .progress{width:100%;height:8px;background:#0e1526;border:1px solid var(--border);border-radius:999px;overflow:hidden;margin:8px 0 0}
+    .progress>i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--brand),var(--brand-2))}
+    .body{padding:22px}
+    .q-title{font-size:20px;font-weight:700;margin:0 0 8px}
+    .q-note{margin:0 0 16px;color:var(--muted)}
+    .options{display:grid;gap:12px}
+    .opt{border:1px solid var(--border);border-radius:14px;padding:14px;background:#0e1526;display:flex;align-items:center;gap:12px}
+    .opt input{width:18px;height:18px;accent-color:var(--brand)}
+    .btn{
+      appearance:none;border:1px solid var(--border);color:var(--text);
+      background:linear-gradient(180deg,#1a2340,#15203b);
+      padding:12px 16px;border-radius:12px;cursor:pointer;font-weight:600;transition:opacity .2s ease
+    }
+    .btn[disabled]{opacity:.6;cursor:not-allowed}
+    .footer{padding:16px 22px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;color:var(--muted)}
+    .hidden{display:none !important}
+    .kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0}
+    .kpi{text-align:center;padding:14px;border:1px solid var(--border);border-radius:12px;background:#0e1526}
+    .kpi b{font-size:20px;display:block}
+    .table{width:100%;border-collapse:collapse}
+    .table th,.table td{border-bottom:1px solid var(--border);padding:10px;text-align:left;vertical-align:top}
+    .pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px}
+    .pill.ok{background:rgba(34,197,94,.15);color:#86efac}
+    .pill.bad{background:rgba(239,68,68,.15);color:#fca5a5}
+    .timer{margin-left:auto;font-weight:700}
+    .email-badge{margin-left:auto;background:#0e1526;border:1px solid var(--border);padding:6px 10px;border-radius:999px;font-size:12px}
+    .signin-wrap{display:flex;align-items:center;gap:12px}
+    .warning{background:rgba(255,255,255,.03);border:1px dashed var(--border);padding:10px 12px;border-radius:12px;margin-top:10px;font-size:13px;color:var(--muted)}
+    .level-badge{display:inline-block;padding:6px 10px;border-radius:999px;border:1px solid var(--border);background:#0e1526;font-weight:700}
+    .passage{border:1px dashed #2a3553;background:#0e1526;border-radius:12px;padding:12px;margin-bottom:12px}
+    .meta{font-size:12px;color:#9aa3b2}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" id="app">
+      <header>
+        <div>
+          <h1>Адаптивний тест з німецької (CEFR A1–C2)</h1>
+          <div class="muted">15–30 хв, адаптивні блоки. Без повернення назад. Перезапуск заблоковано до завершення таймера.</div>
+          <div class="progress"><i id="bar"></i></div>
+        </div>
+        <div id="userBlock" class="signin-wrap">
+          <div class="fld" id="manualEmail" style="display:flex;gap:10px">
+            <input id="emailInput" type="email" placeholder="ваша_пошта@company.com" />
+            <button class="btn" id="startBtn">Старт</button>
+          </div>
+          <span id="emailBadge" class="email-badge hidden"></span>
+          <span id="timer" class="timer hidden">30:00</span>
+        </div>
+      </header>
+
+      <div class="body" id="stage"></div>
+
+      <div class="footer">
+        <div class="muted" id="status">Завантаження…</div>
+        <div>
+          <button class="btn" id="restartBtn" title="Скидання заборонено" disabled>Скинути</button>
+          <button class="btn" id="nextBtn" disabled>Далі →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ---------------- CONFIG: CEFR, адаптивні блоки ----------------
+    const CONFIG = {
+      durationMin: 30,
+      startLevel: 'B1',
+      blockSize: 6,                // 2 grammar + 2 reading + 2 listening
+      upThreshold: 0.70,           // >=70% в блоці — крок вгору
+      downThreshold: 0.40,         // <40% — крок вниз
+      maxBlocks: 4,                // звичайно 2–4 блоки
+      weights: { grammar: 0.4, reading: 0.3, listening: 0.3 },
+      // CEFR порядок
+      ladder: ['A1','A2','B1','B2','C1','C2']
+    };
+
+    // ---------------- BANK: прикладові айтеми (MVP). Додавай сюди нові. ----------------
+    // Кожний айтем: { id, skill, level, disc (1..3), type:'single'|'multiple', text, options[], answer, passage? }
+    // ⚠️ Для GitHub Pages MVP audio замінено на коротку сцену/репліку як "listening".
+    const BANK = [
+      // -------- A1 Grammar --------
+      {id:'g_a1_1', skill:'grammar', level:'A1', disc:1, type:'single',
+        text:'Wähle die richtige Form: „Ich ___ aus Prag.“',
+        options:['bin','bist','ist','seid'], answer:0},
+      {id:'g_a1_2', skill:'grammar', level:'A1', disc:1, type:'single',
+        text:'Artikel: ___ Tisch (Nom., Sg.)',
+        options:['die','der','das','den'], answer:1},
+
+      // -------- A2 Grammar --------
+      {id:'g_a2_1', skill:'grammar', level:'A2', disc:1, type:'single',
+        text:'Perfekt von „machen“:',
+        options:['ich bin gemacht','ich habe gemacht','ich wurde machen','ich mache gehabt'], answer:1},
+      {id:'g_a2_2', skill:'grammar', level:'A2', disc:1, type:'single',
+        text:'Präposition + Dativ: „nach ___ Arbeit gehe ich einkaufen.“',
+        options:['die','der','den','dem'], answer:3},
+
+      // -------- B1 Grammar --------
+      {id:'g_b1_1', skill:'grammar', level:'B1', disc:2, type:'single',
+        text:'Konjunktiv II: „Wenn ich mehr Zeit hätte, ___ ich mehr lesen.“',
+        options:['würde','werde','war','muss'], answer:0},
+      {id:'g_b1_2', skill:'grammar', level:'B1', disc:2, type:'single',
+        text:'Nebensatz: „Er bleibt zu Hause, weil er ___ ist.“',
+        options:['krank','ist krank','krank ist','ist'], answer:2},
+
+      // -------- B2 Grammar --------
+      {id:'g_b2_1', skill:'grammar', level:'B2', disc:2, type:'single',
+        text:'Passiv Präsens: „Man baut hier ein Haus.“ → „Hier ___ ein Haus gebaut.“',
+        options:['wird','werden','ist','sei'], answer:0},
+      {id:'g_b2_2', skill:'grammar', level:'B2', disc:2, type:'single',
+        text:'Präpositionen: „abhängig ___ den Ergebnissen“',
+        options:['an','von','mit','zu'], answer:1},
+
+      // -------- C1 Grammar --------
+      {id:'g_c1_1', skill:'grammar', level:'C1', disc:3, type:'single',
+        text:'Nominalisierung: „weil er krank ist“ → „___ seiner Krankheit“',
+        options:['trotz','aufgrund','wegen','während'], answer:2},
+      {id:'g_c1_2', skill:'grammar', level:'C1', disc:3, type:'single',
+        text:'Satzbau: „Er hat es gestern nicht geschafft, pünktlich anzukommen.“ Правильно?',
+        options:['Так','Ні (некоректний порядок)','Так, але краще вживати Konjunktiv','Ні, дієслово у формі falsch'], answer:0},
+
+      // -------- C2 Grammar --------
+      {id:'g_c2_1', skill:'grammar', level:'C2', disc:3, type:'single',
+        text:'Stilistisch: „Es ist durchaus plausibel, dass…“ — яке найближче нейтральне перефразування?',
+        options:['Es ist sehr möglich, dass…','Man sagt, dass…','Es muss so sein, dass…','Es ist unsicher, ob…'], answer:0},
+      {id:'g_c2_2', skill:'grammar', level:'C2', disc:3, type:'single',
+        text:'Feinheit: Вкажіть найдоречнішу сполучуваність: „eine Hypothese ___“',
+        options:['machen','setzen','aufstellen','stellen'], answer:2},
+
+      // -------- Reading A1–C2 --------
+      {id:'r_a1_1', skill:'reading', level:'A1', disc:1, type:'single',
+        passage:'Hallo! Ich bin Anna. Ich komme aus Polen und wohne in Brno. Ich lerne Deutsch.',
+        text:'Wo wohnt Anna?', options:['in Prag','in Brno','in Wien','in Berlin'], answer:1},
+      {id:'r_a2_1', skill:'reading', level:'A2', disc:1, type:'single',
+        passage:'Der Supermarkt öffnet um 7 Uhr und schließt um 21 Uhr. Am Sonntag ist er geschlossen.',
+        text:'Wann ist der Supermarkt geöffnet?', options:['7–19','7–21','8–20','9–21'], answer:1},
+      {id:'r_b1_1', skill:'reading', level:'B1', disc:2, type:'single',
+        passage:'Der Bewerber verfügt über drei Jahre Erfahrung im Vertrieb und spricht fließend Englisch.',
+        text:'Worüber verfügt der Bewerber?', options:['über Studium','über drei Jahre Erfahrung','über Führerschein','über Praktikum'], answer:1},
+      {id:'r_b2_1', skill:'reading', level:'B2', disc:2, type:'single',
+        passage:'Die Studie legt nahe, dass regelmäßige Bewegung kognitive Funktionen langfristig verbessert.',
+        text:'Was legt die Studie nahe?', options:['Bewegung schadet','Nur kurzfristige Effekte','Verbesserung kognitiver Funktionen','Kein Zusammenhang'], answer:2},
+      {id:'r_c1_1', skill:'reading', level:'C1', disc:3, type:'single',
+        passage:'Obgleich die Datenlage heterogen ist, konvergieren die Befunde hinsichtlich der Wirksamkeit.',
+        text:'„konvergieren die Befunde“ bedeutet…', options:['Sie widersprechen sich','Sie nähern sich an','Sie sind unbrauchbar','Sie fehlen'], answer:1},
+      {id:'r_c2_1', skill:'reading', level:'C2', disc:3, type:'single',
+        passage:'Die Autorin dekonstruiert gängige Narrative, indem sie implizite Prämissen freilegt.',
+        text:'Was tut die Autorin?', options:['Sie erzählt Geschichten','Sie bestätigt Narrative','Sie legt verborgene Annahmen offen','Sie ignoriert Prämissen'], answer:2},
+
+      // -------- Listening A1–C2 (текстова сцена як сурогат аудіо) --------
+      {id:'l_a1_1', skill:'listening', level:'A1', disc:1, type:'single',
+        passage:'(Am Bahnhof) — Entschuldigung, wann fährt der Zug nach Wien? — Um zehn Uhr, Gleis 3.',
+        text:'Wohin fährt der Zug?', options:['nach Berlin','nach Wien','nach Prag','nach Linz'], answer:1},
+      {id:'l_a2_1', skill:'listening', level:'A2', disc:1, type:'single',
+        passage:'— Ich suche die Apotheke. — Geradeaus und dann links.',
+        text:'Wo ist die Apotheke?', options:['rechts','geradeaus und links','zurück','oben'], answer:1},
+      {id:'l_b1_1', skill:'listening', level:'B1', disc:2, type:'single',
+        passage:'— Ich arbeite seit fünf Jahren hier und kümmere mich um internationale Kunden.',
+        text:'Wie lange arbeitet die Person dort?', options:['seit drei Jahren','seit fünf Jahren','seit zehn Jahren','seit einem Jahr'], answer:1},
+      {id:'l_b2_1', skill:'listening', level:'B2', disc:2, type:'single',
+        passage:'— Wir implementieren derzeit ein neues CRM-System, um die Prozesse zu konsolidieren.',
+        text:'Wozu wird das CRM-System implementiert?', options:['zur Kündigung','zur Konsolidierung der Prozesse','zur Werbung','für HR'], answer:1},
+      {id:'l_c1_1', skill:'listening', level:'C1', disc:3, type:'single',
+        passage:'— Der Bericht problematisiert die methodische Stichhaltigkeit früherer Untersuchungen.',
+        text:'Was tut der Bericht?', options:['Er lobt alle Untersuchungen','Er ignoriert Methodenfragen','Er stellt die Stichhaltigkeit in Frage','Er wiederholt Ergebnisse'], answer:2},
+      {id:'l_c2_1', skill:'listening', level:'C2', disc:3, type:'single',
+        passage:'— Angesichts der Evidenz halte ich die These nur bedingt tragfähig.',
+        text:'Wie bewertet der Sprecher die These?', options:['voll tragfähig','bedingt tragfähig','gar nicht tragfähig','überragend'], answer:1},
+    ];
+
+    // ---------------- STATE ----------------
+    const LS = { email:'lang_email', end:'lang_end', idx:'lang_idx', answers:'lang_answers', plan:'lang_plan', start:'lang_start' };
+    const stage = document.getElementById('stage');
+    const statusEl = document.getElementById('status');
+    const nextBtn = document.getElementById('nextBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const emailBadge = document.getElementById('emailBadge');
+    const timerEl = document.getElementById('timer');
+    const startBtn = document.getElementById('startBtn');
+    const emailInput = document.getElementById('emailInput');
+    const bar = document.getElementById('bar');
+
+    let plan = [];     // послідовність питань (об’єкти BANK) сформована блоками
+    let idx = 0;
+    let answers = [];  // [{id, picked:[...] }]
+    let currentBlock = 0;
+    let currentLevel = CONFIG.startLevel;
+
+    // ---------------- HELPERS ----------------
+    const shuffle = (arr)=>arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
+    const levelUp = (lvl)=>CONFIG.ladder[Math.min(CONFIG.ladder.indexOf(lvl)+1, CONFIG.ladder.length-1)];
+    const levelDown = (lvl)=>CONFIG.ladder[Math.max(CONFIG.ladder.indexOf(lvl)-1, 0)];
+    const fmtTime = (ms)=> {
+      const m = String(Math.floor(ms/60000)).padStart(2,'0');
+      const s = String(Math.floor((ms%60000)/1000)).padStart(2,'0');
+      return `${m}:${s}`;
+    };
+
+    function pickBlock(level){
+      // 2 grammar + 2 reading + 2 listening із вказаного level
+      const by = (skill)=>BANK.filter(x=>x.level===level && x.skill===skill);
+      const pick = (arr, n)=>shuffle(arr).slice(0, Math.min(n, arr.length));
+      return [
+        ...pick(by('grammar'), 2),
+        ...pick(by('reading'), 2),
+        ...pick(by('listening'), 2),
+      ];
+    }
+
+    function buildPlan(){
+      // Перший блок — B1, далі будемо додавати після оцінки блоку (lazy)
+      const first = pickBlock(currentLevel);
+      plan = [...first];
+      currentBlock = 1;
+      localStorage.setItem(LS.plan, JSON.stringify(plan));
+    }
+
+    function ensureNextBlock(){
+      // якщо ще не досягнуто maxBlocks — додати блок для currentLevel
+      if(currentBlock >= CONFIG.maxBlocks) return;
+      const extra = pickBlock(currentLevel);
+      plan = [...plan, ...extra];
+      currentBlock++;
+      localStorage.setItem(LS.plan, JSON.stringify(plan));
+    }
+
+    function interpretCEFR(score){
+      if (score < 30) return 'A1';
+      if (score < 50) return 'A2';
+      if (score < 70) return 'B1';
+      if (score < 85) return 'B2';
+      if (score < 95) return 'C1';
+      return 'C2';
+    }
+
+    function corridor(main){
+      const i = CONFIG.ladder.indexOf(main);
+      const low = CONFIG.ladder[Math.max(0, i-1)];
+      const high = CONFIG.ladder[Math.min(CONFIG.ladder.length-1, i+1)];
+      return (low===main && high===main) ? main : `${low}–${high}`;
+    }
+
+    // ---------------- AUTH / START ----------------
+    startBtn.addEventListener('click', ()=>{
+      const email = (emailInput.value||'').trim();
+      if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { alert('Укажіть коректну робочу пошту'); return; }
+      lockAndStart(email);
+    });
+
+    function lockAndStart(email){
+      const e2 = localStorage.getItem(LS.email);
+      const endTs = +localStorage.getItem(LS.end) || 0;
+      const now = Date.now();
+      if(e2 && endTs && now<endTs && e2!==email){ alert('Сесія вже запущена під іншим email до завершення таймера.'); return; }
+
+      localStorage.setItem(LS.email, email);
+      emailBadge.textContent = email; emailBadge.classList.remove('hidden');
+      document.getElementById('manualEmail')?.classList.add('hidden');
+
+      if(!localStorage.getItem(LS.end)){
+        const end = now + CONFIG.durationMin*60*1000;
+        localStorage.setItem(LS.end, String(end));
+        localStorage.setItem(LS.start, String(now));
+        localStorage.setItem(LS.idx, '0');
+        localStorage.setItem(LS.answers, JSON.stringify([]));
+        currentLevel = CONFIG.startLevel;
+        buildPlan();
+      } else {
+        plan = JSON.parse(localStorage.getItem(LS.plan) || '[]');
+        if(!plan.length){ currentLevel = CONFIG.startLevel; buildPlan(); }
+      }
+      idx = +(localStorage.getItem(LS.idx) || '0');
+      answers = JSON.parse(localStorage.getItem(LS.answers) || '[]');
+      timerEl.classList.remove('hidden');
+      tickTimer();
+      render();
+    }
+
+    (function bootstrap(){
+      const email = localStorage.getItem(LS.email);
+      const endTs = +localStorage.getItem(LS.end) || 0;
+      if(email && endTs){
+        emailBadge.textContent = email; emailBadge.classList.remove('hidden');
+        document.getElementById('manualEmail')?.classList.add('hidden');
+        timerEl.classList.remove('hidden');
+        plan = JSON.parse(localStorage.getItem(LS.plan) || '[]');
+        if(!plan.length){ currentLevel = CONFIG.startLevel; buildPlan(); }
+        idx = +(localStorage.getItem(LS.idx) || '0');
+        answers = JSON.parse(localStorage.getItem(LS.answers) || '[]');
+        tickTimer();
+        render();
+      } else {
+        stage.innerHTML = '<div class="warning">Вкажіть робочу пошту та натисніть «Старт». Після старту таймер запуститься на 30 хвилин, повернення до попередніх питань недоступне.</div>';
+        statusEl.textContent = 'Готово до старту';
+      }
+    })();
+
+    // ---------------- RENDER ----------------
+    function updateProgress(){
+      const total = plan.length;
+      statusEl.textContent = `Питання ${Math.min(idx+1,total)} із ${total || '?'}`;
+      bar.style.width = total ? `${(idx/total)*100}%` : '0%';
+    }
+
+    function render(){
+      updateProgress();
+      nextBtn.disabled = true;
+      stage.innerHTML = '';
+
+      // Кінець тесту, якщо вичерпано план або час
+      if(idx >= plan.length){
+        return renderResult();
+      }
+
+      const q = plan[idx];
+      const block = document.createElement('div');
+
+      // PASSAGE (для reading/listening)
+      if(q.passage){
+        const m = document.createElement('div');
+        m.className = 'meta';
+        m.textContent = `${q.skill.toUpperCase()} • рівень ${q.level}`;
+        block.appendChild(m);
+
+        const p = document.createElement('div');
+        p.className = 'passage';
+        p.textContent = q.passage;
+        block.appendChild(p);
+      }
+
+      const h = document.createElement('h2'); h.className='q-title'; h.textContent = q.text; block.appendChild(h);
+      const note = document.createElement('div'); note.className='q-note muted';
+      note.textContent = (q.type==='multiple' ? 'Можна обрати кілька варіантів' : 'Оберіть один варіант');
+      block.appendChild(note);
+
+      const options = document.createElement('div'); options.className='options';
+      const indices = shuffle(q.options.map((_,i)=>i)); // перемішування варіантів
+      indices.forEach((i)=>{
+        const label=document.createElement('label'); label.className='opt';
+        const input=document.createElement('input'); input.type=(q.type==='multiple')?'checkbox':'radio'; input.name='q'; input.value=i;
+        const span=document.createElement('span'); span.textContent=q.options[i];
+        label.appendChild(input); label.appendChild(span); options.appendChild(label);
+      });
+      block.appendChild(options);
+      stage.appendChild(block);
+
+      const checkReady = ()=>{
+        nextBtn.disabled = (q.type==='multiple')
+          ? options.querySelectorAll('input:checked').length===0
+          : !options.querySelector('input:checked');
+      };
+      options.addEventListener('change', checkReady);
+      checkReady();
+
+      nextBtn.onclick = () => {
+        let picked = [];
+        if(q.type==='multiple'){
+          picked = [...options.querySelectorAll('input:checked')].map(i=>+i.value);
+        } else {
+          const sel = options.querySelector('input:checked');
+          picked = sel ? [ +sel.value ] : [];
+        }
+        answers[idx] = { id:q.id, picked };
+        localStorage.setItem(LS.answers, JSON.stringify(answers));
+        idx++; localStorage.setItem(LS.idx, String(idx));
+
+        // після кожного блоку приймаємо рішення про рівень та добудову плану
+        const inBlock = idx % CONFIG.blockSize;
+        if(inBlock === 0){
+          evaluateBlockAndRoute();
+          ensureNextBlock();
+        }
+
+        render();
+      };
+      restartBtn.onclick = ()=>{};
+    }
+
+    // ---------------- SCORING ----------------
+    function scoreQuestion(q, picked){
+      // Порівнюємо індекси (picked — в перетасованій нумерації, але answer даний для ориг. індекса)
+      // Ми зберігаємо picked у вигляді індексів з поточного рендера (які дорівнюють індексам в q.options після shuffle),
+      // але оскільки ми брали answer за оригіналом — треба зіставити по значенню тексту.
+      // Просте рішення: визначити, які тексти обрані, і порівняти з правильним текстом.
+      const correctText = q.options[q.answer];
+      if(q.type==='single'){
+        if(!picked.length) return 0;
+        const chosenText = q.options[picked[0]];
+        return (chosenText === correctText) ? 1 : 0;
+      } else {
+        // multiple — у цьому MVP не використовується (в банку всі single), але залишаємо реалізацію.
+        const correctSet = new Set(Array.isArray(q.answer) ? q.answer.map(i=>q.options[i]) : [correctText]);
+        const chosenSet  = new Set(picked.map(i=>q.options[i]));
+        if(correctSet.size !== chosenSet.size) return 0;
+        for(const v of correctSet){ if(!chosenSet.has(v)) return 0; }
+        return 1;
+      }
+    }
+
+    function evaluateBlockAndRoute(){
+      const start = idx - CONFIG.blockSize;
+      const end = idx;
+      const slice = plan.slice(start, end);
+      const ansSlice = answers.slice(start, end);
+
+      // підрахунок %
+      let correct = 0;
+      let g=0, r=0, l=0, gOk=0, rOk=0, lOk=0;
+
+      for(let i=0;i<slice.length;i++){
+        const q = slice[i];
+        const a = ansSlice[i] || {picked:[]};
+        const ok = scoreQuestion(q, a.picked);
+        correct += ok;
+        if(q.skill==='grammar'){ g++; gOk+=ok; }
+        if(q.skill==='reading'){ r++; rOk+=ok; }
+        if(q.skill==='listening'){ l++; lOk+=ok; }
+      }
+      const perc = correct / slice.length;
+
+      // роутинг
+      if(perc >= CONFIG.upThreshold){ currentLevel = levelUp(currentLevel); }
+      else if(perc < CONFIG.downThreshold){ currentLevel = levelDown(currentLevel); }
+      // інакше — залишаємо рівень
+
+      // зберегти проміжну метрику для підсумку
+      const hist = JSON.parse(localStorage.getItem('block_hist')||'[]');
+      hist.push({
+        block: hist.length+1,
+        levelAtStart: (hist.length? hist[hist.length-1].nextLevel : CONFIG.startLevel),
+        resultPercent: Math.round(perc*100),
+        nextLevel: currentLevel,
+        detail: { grammar:[gOk,g], reading:[rOk,r], listening:[lOk,l] }
+      });
+      localStorage.setItem('block_hist', JSON.stringify(hist));
+    }
+
+    // ---------------- RESULT ----------------
+    function renderResult(){
+      bar.style.width = '100%';
+
+      // Загальний скоринг по секціях
+      let total=plan.length, ok=0;
+      let g=0, r=0, l=0, gOk=0, rOk=0, lOk=0;
+      for(let i=0;i<plan.length;i++){
+        const q = plan[i];
+        const a = answers[i] || {picked:[]};
+        const s = scoreQuestion(q, a.picked);
+        ok += s;
+        if(q.skill==='grammar'){ g++; gOk+=s; }
+        if(q.skill==='reading'){ r++; rOk+=s; }
+        if(q.skill==='listening'){ l++; lOk+=s; }
+      }
+      const gp = g? gOk/g : 0, rp = r? rOk/r : 0, lp = l? lOk/l : 0;
+      const weighted = gp*CONFIG.weights.grammar + rp*CONFIG.weights.reading + lp*CONFIG.weights.listening;
+      const percent = Math.round(weighted*100);
+      const main = interpretCEFR(percent);
+      const band = corridor(main);
+
+      // історія блоків
+      const hist = JSON.parse(localStorage.getItem('block_hist')||'[]');
+
+      stage.innerHTML = `
+        <h2>Ваш рівень: <span class="level-badge">${main}</span> <span class="muted">(коридор: ${band})</span></h2>
+        <div class="muted">Дякуємо! Нижче — підсумки та секційний розклад.</div>
+        <div class="kpis">
+          <div class="kpi"><b>${percent}%</b><div class="muted">Зважений відсоток</div></div>
+          <div class="kpi"><b>${ok}/${total}</b><div class="muted">Правильних</div></div>
+          <div class="kpi"><b>${timeTaken()}</b><div class="muted">Час</div></div>
+        </div>
+
+        <table class="table" style="margin-top:8px">
+          <thead><tr><th>Секція</th><th>Баланс</th><th>Точність</th><th>Вага</th></tr></thead>
+          <tbody>
+            <tr><td>Grammar/Vocab</td><td>${gOk}/${g}</td><td>${Math.round(gp*100)}%</td><td>${CONFIG.weights.grammar}</td></tr>
+            <tr><td>Reading</td><td>${rOk}/${r}</td><td>${Math.round(rp*100)}%</td><td>${CONFIG.weights.reading}</td></tr>
+            <tr><td>Listening</td><td>${lOk}/${l}</td><td>${Math.round(lp*100)}%</td><td>${CONFIG.weights.listening}</td></tr>
+          </tbody>
+        </table>
+
+        <h3 style="margin-top:18px">Хід тесту (блоки)</h3>
+        <table class="table">
+          <thead><tr><th>#</th><th>Рівень на старті</th><th>Результат блоку</th><th>Наступний рівень</th><th>Деталі</th></tr></thead>
+          <tbody id="blocks"></tbody>
+        </table>
+
+        <div class="warning" style="margin-top:12px">
+          Рекомендація: для підтвердження рівня додайте коротке письмове завдання (5–7 хв) та/або голосову відповідь (60–90 сек).
+        </div>
+      `;
+
+      const blocks = document.getElementById('blocks');
+      hist.forEach((b,i)=>{
+        const tr = document.createElement('tr');
+        const d = b.detail;
+        tr.innerHTML = `
+          <td>${i+1}</td>
+          <td>${b.levelAtStart}</td>
+          <td>${b.resultPercent}%</td>
+          <td>${b.nextLevel}</td>
+          <td class="muted">G: ${d.grammar[0]}/${d.grammar[1]} • R: ${d.reading[0]}/${d.reading[1]} • L: ${d.listening[0]}/${d.listening[1]}</td>
+        `;
+        blocks.appendChild(tr);
+      });
+
+      // блокування перезапуску до кінця таймера зберігаємо
+    }
+
+    // ---------------- TIMER ----------------
+    function tickTimer(){
+      const end = +localStorage.getItem(LS.end) || 0;
+      if(!end) return;
+      const left = Math.max(0, end - Date.now());
+      timerEl.textContent = fmtTime(left);
+      if(left<=0){
+        idx = plan.length; localStorage.setItem(LS.idx, String(idx));
+        render();
+        return;
+      }
       setTimeout(tickTimer, 250);
     }
     function timeTaken(){
