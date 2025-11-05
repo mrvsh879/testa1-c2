@@ -459,7 +459,7 @@
     try {
       res = await fetch(AI_ENDPOINT, {
         method: "POST",
-        headers: { "Content-Type":"application/json" },
+        headers: { "Content-Type":"text/plain" },
         body: JSON.stringify({ intent: "final-assess", data: { rawReport, meta } })
       });
     } catch(e){
