@@ -440,46 +440,85 @@
     }
   }
 
-  // ---------- AI-аудит ----------
-  async function aiAudit(rawReport){
-    if(!AI_ENDPOINT || !AI_ENDPOINT.includes('/exec')) {
-      aiStatus.textContent = "AI-аудит не подключён: укажите AI_ENDPOINT вверху файла.";
-      return;
-    }
-    const meta = {
-      version: "1.0",
-      honesty: state.honesty,
-      startedAt: new Date(state.startedAt).toISOString(),
-      finishedAt: new Date().toISOString(),
-      locale: "de-DE",
-      testSpec: { totalQuestions: QUESTIONS.length, penaltyWrong: -0.33, hasIDK: true }
-    };
+ // ---------- AI-аудит ----------
+async function aiAudit(rawReport) {
+  if (!AI_ENDPOINT || !AI_ENDPOINT.includes('/exec')) {
+    aiStatus.textContent = "AI-аудит не подключён: укажите AI_ENDPOINT вверху файла.";
+    return;
+  }
 
-    let res;
-    try {
-      res = await fetch(AI_ENDPOINT, {
-        method: "POST",
-        headers: { "Content-Type":"text/plain" },
-        body: JSON.stringify({ intent: "final-assess", data: { rawReport, meta } })
-      });
-    } catch(e){
-      aiStatus.textContent = "AI-аудит: fetch error.";
-      return;
-    }
+  const meta = {
+    version: "1.0",
+    honesty: state.honesty,
+    startedAt: new Date(state.startedAt).toISOString(),
+    finishedAt: new Date().toISOString(),
+    locale: "de-DE",
+    testSpec: { totalQuestions: QUESTIONS.length, penaltyWrong: -0.33, hasIDK: true }
+  };
 
-    let payload;
-    try { payload = await res.json(); }
-    catch(e){ aiStatus.textContent = "AI-аудит: не удалось прочитать JSON."; return; }
+  let res;
+  try {
+    res = await fetch(AI_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain" }, // важно: без preflight
+      body: JSON.stringify({ intent: "final-assess", data: { rawReport, meta } })
+    });
+  } catch (e) {
+    aiStatus.textContent = "AI-аудит: fetch error.";
+    return;
+  }
 
-    const out = payload?.output ?? payload;
-    if(!res.ok){
-      aiStatus.textContent = "AI-аудит HTTP " + res.status + ": " + (out?.error || 'unknown');
-      return;
-    }
-    if(!out || out.error){
-      aiStatus.textContent = "AI-аудит: " + (out?.error || "ошибка ответа");
-      return;
-    }
+  // Пытаемся разобрать JSON
+  let payload;
+  try {
+    payload = await res.json();
+  } catch (e) {
+    aiStatus.textContent = "AI-аудит: не удалось прочитать JSON.";
+    return;
+  }
+
+  // В /v1/responses полезная часть может лежать в .output
+  const out = payload?.output ?? payload;
+
+  // Удобный принтер ошибок (не [object Object])
+  const pretty = (x) => {
+    if (x == null) return "unknown";
+    if (typeof x === "string") return x;
+    try { return JSON.stringify(x).slice(0, 300); } catch (_) { return String(x); }
+  };
+
+  if (!res.ok) {
+    aiStatus.textContent = "AI-аудит HTTP " + res.status + ": " + pretty(out?.error || out);
+    return;
+  }
+  if (!out || out.error) {
+    aiStatus.textContent = "AI-аудит: " + pretty(out?.error || "ошибка ответа");
+    return;
+  }
+
+  // Успех — показываем блок
+  aiStatus.classList.add('hidden');
+  aiBox.classList.remove('hidden');
+
+  const adj = out.adjustments || {};
+  aiBox.innerHTML = `
+    <div class="grid">
+      <div class="kpi"><span>AI-уровень:</span> <span class="v">${sanitize(out.adjustedLevel || "—")}</span></div>
+      <div class="kpi"><span>Доверие AI:</span> <span class="v">${Math.round((out.confidence || 0) * 100)}%</span></div>
+      <div class="kpi"><span>Флаги:</span> <span class="v">${(out.flags || []).map(sanitize).join(', ') || '—'}</span></div>
+    </div>
+    <div class="hr"></div>
+    <div class="small muted">
+      Коррекции по диапазонам (AI): ${["A1","A2","B1","B2","C1","C2"].map(k=>`${k}: ${adj[k] ?? 0}`).join(' · ')}
+    </div>
+    <div style="margin-top:8px">${sanitize(out.rationale || 'Без комментариев.')}</div>
+  `;
+}
+
+// Хелпер для безопасной вставки текста в HTML
+function sanitize(t){
+  return String(t).replace(/[&<>"]/g, s => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[s]));
+}
 
     aiStatus.classList.add('hidden');
     aiBox.classList.remove('hidden');
