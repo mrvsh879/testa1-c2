@@ -28,7 +28,6 @@ h1{margin:0 0 12px;font-size:24px;letter-spacing:.2px}
 .q{padding:16px;border:1px solid #242953;border-radius:12px;background:#121634}
 .q h3{margin:0 0 10px;font-size:16px}
 .opt{display:block;border:1px solid #2a2f61;border-radius:10px;padding:10px;cursor:pointer;background:#111539}
-.opt input{margin-right:8px}
 .opt+.opt{margin-top:8px}
 .opt.correct{border-color:#1f8c5a;background:#0e2e22}
 .opt.wrong{border-color:#9e2e2e;background:#2a1111}
@@ -106,7 +105,7 @@ h1{margin:0 0 12px;font-size:24px;letter-spacing:.2px}
         <h3 style="margin:0 0 8px">Профиль по уровням</h3>
         <table class="table" id="bandTable">
           <thead><tr><th>Уровень</th><th>Верно</th><th>Всего</th><th>Точность</th></tr></thead>
-        <tbody></tbody>
+          <tbody></tbody>
         </table>
       </div>
       <div class="result">
@@ -131,7 +130,7 @@ h1{margin:0 0 12px;font-size:24px;letter-spacing:.2px}
 
 <script>
 /* ====== AI endpoint ====== */
-const AI_ENDPOINT = "https://script.google.com/macros/s/AKfycbxIoMsVU88aW_rGXGR_ScjovjPrMGCMloEqEUFV8guay_emA-aW5nLFujz5-4xSpjPjKA/exec";
+const AI_ENDPOINT = "https://script.google.com/macros/s/AKfycbyyzBueArpRlxI2xbyHo3lKWv_XQqnNUf1esQqgqTF3mIir2ogng7lFT4aoN4GdJ8Vntw/exec";
 (function(){ const warn = document.getElementById('aiWarn');
   warn.textContent = (AI_ENDPOINT && AI_ENDPOINT.includes('/exec'))
     ? "AI подключён. После завершения теста появится AI-аудит."
@@ -159,7 +158,7 @@ const QUESTIONS = [
   {id:"A2-8",level:"A2",q:"Правильный артикль в Akkusativ (f): Ich sehe ___ Frau.",options:["die","der","eine","einer"],answerIdx:2},
 
   {id:"B1-1",level:"B1",q:"Придаточное с weil: Ich bleibe zu Hause, weil ich ___.",options:["bin müde","müde bin","bin der müde","müde ist"],answerIdx:1},
-  {id:"B1-2",level:"B1",q:"Präteritum модальных: Früher ___ ich nicht gut schwimmen.",options:["kann","konnte","könnte","kannte"],answerIdx:1},
+  {id:"B1-2",level:"B1",q:"Präteritum модальных: Früher ___ ich nicht gut schwimmen.",options:["kann","konnte","кönnte","kannte"],answerIdx:1},
   {id:"B1-3",level:"B1",q:"Относительное: Der Mann, ___ dort steht, ist mein Lehrer.",options:["der","den","dem","dessen"],answerIdx:0},
   {id:"B1-4",level:"B1",q:"Пассив Präsens: Der Brief ___ von ihm geschrieben.",options:["wird","ist geschrieben","wird geschrieben","war geschrieben"],answerIdx:2},
   {id:"B1-5",level:"B1",q:"Genitiv: Das ist das Auto ___ Freundin.",options:["meine","meiner","meines","meinem"],answerIdx:1},
@@ -198,7 +197,6 @@ const QUESTIONS = [
 /* ====== Состояние/ссылки ====== */
 const state = { startedAt:null, current:0, answers:{}, times:{}, qStartAt:null, honesty:false };
 const order = QUESTIONS.map((_,i)=>i), total = order.length;
-const idkIndexByQ = {}; // индекс "Не знаю" по каждому вопросу
 
 const intro = qs('#screen-intro'), test = qs('#screen-test'), result = qs('#screen-result');
 const startBtn = qs('#startBtn'), honestyCb = qs('#honesty');
@@ -250,6 +248,7 @@ function move(delta){
   renderCurrent();
 }
 
+/* ====== Рендер вопроса (без индексов «Не знаю») ====== */
 function renderCurrent(){
   const idx = state.current;
   const q = QUESTIONS[order[idx]];
@@ -260,33 +259,35 @@ function renderCurrent(){
   questionHost.innerHTML = '';
   const box = document.createElement('div'); box.className='q';
   box.innerHTML = `<h3>${q.q}</h3>`;
-  // подготовим варианты + "Не знаю"
-  const opts = [...q.options];
-  const IDK_LABEL = 'Не знаю';
-  opts.push(IDK_LABEL);
-  idkIndexByQ[q.id] = opts.length - 1;
 
-  opts.forEach((opt,optIdx)=>{
+  // нормальные варианты
+  q.options.forEach((opt,optIdx)=>{
     const lab = document.createElement('label'); lab.className='opt';
-    const input = document.createElement('input'); input.type='radio'; input.name='opt'; input.value=optIdx;
-    const saved = state.answers[q.id];
-    const checked = (saved==='idk' && optIdx===idkIndexByQ[q.id]) || (typeof saved==='number' && saved===optIdx);
-    if (checked) input.checked = true;
-
-    lab.appendChild(input); lab.append(opt);
+    lab.textContent = opt;
     lab.addEventListener('click',()=>{
-      // фиксируем выбор
-      if (optIdx === idkIndexByQ[q.id]) state.answers[q.id] = 'idk';
-      else state.answers[q.id] = optIdx;
-
-      setTimeout(()=>{
-        if(state.current<total-1){ move(1); }
-        else { nextBtn.classList.add('hidden'); finishBtn.classList.remove('hidden'); }
-      },80);
+      state.answers[q.id] = optIdx; // обычный ответ — число
+      goNext();
     });
+    // подсветка выбора
+    if (state.answers[q.id] === optIdx) lab.classList.add('correct'); // просто отметка выбранного
     box.appendChild(lab);
   });
+
+  // «Не знаю» — отдельная метка
+  const IDK_LABEL = 'Не знаю';
+  const idkEl = document.createElement('label'); idkEl.className='opt'; idkEl.textContent = IDK_LABEL;
+  idkEl.addEventListener('click',()=>{ state.answers[q.id] = 'idk'; goNext(); });
+  if (state.answers[q.id] === 'idk') idkEl.classList.add('wrong'); // подсветим иначе
+  box.appendChild(idkEl);
+
   questionHost.appendChild(box);
+
+  function goNext(){
+    setTimeout(()=>{
+      if(state.current<total-1){ move(1); }
+      else { nextBtn.classList.add('hidden'); finishBtn.classList.remove('hidden'); }
+    },80);
+  }
 
   prevBtn.disabled = idx===0;
   nextBtn.classList.toggle('hidden', idx===total-1);
@@ -302,7 +303,7 @@ function scoreReport(){
   QUESTIONS.forEach(q=>{
     const ans = state.answers[q.id];
     let delta=0;
-    const isIdk = (ans==='idk') || (typeof ans==='number' && ans===idkIndexByQ[q.id]);
+    const isIdk = (ans === 'idk'); // ТОЛЬКО метка, никаких индексов!
 
     if(ans===undefined || isIdk){ delta=0; skip++; }
     else if(ans===q.answerIdx){ delta=1; correct++; }
@@ -310,7 +311,10 @@ function scoreReport(){
 
     penalized += delta;
     perBand[q.level].push({id:q.id,correct:ans===q.answerIdx,delta});
-    details.push({id:q.id,level:q.level,chosen:(ans==='idk'?null:ans),correctIdx:q.answerIdx,delta,timeSec:state.times[q.id]||0});
+    details.push({
+      id:q.id,level:q.level,chosen:(isIdk?null:ans),correctIdx:q.answerIdx,delta,
+      timeSec:state.times[q.id]||0
+    });
   });
 
   const bandRates={};
@@ -429,6 +433,7 @@ function showResult(r){
   restartBtn.onclick = ()=>window.location.reload();
 }
 
+/* ====== Просмотр ответов (без индексов «Не знаю») ====== */
 function reviewAnswers(){
   result.scrollIntoView({behavior:'smooth'});
   const container = document.createElement('div'); container.className='grid';
@@ -436,20 +441,15 @@ function reviewAnswers(){
     const chosen = state.answers[q.id];
     const wrap = document.createElement('div'); wrap.className='q';
     wrap.innerHTML = `<div class="level-tag">${q.level}</div><h3 style="margin-top:8px">${q.q}</h3>`;
-    // подготовим список с "Не знаю"
-    const opts=[...q.options,'Не знаю'];
-    const localIdk = opts.length-1;
     q.options.forEach((opt,i)=>{
       const lab=document.createElement('div'); lab.className='opt';
       if(i===q.answerIdx) lab.classList.add('correct');
-      if(chosen!==undefined && i===chosen && chosen!==q.answerIdx) lab.classList.add('wrong');
+      if(typeof chosen==='number' && chosen===i && chosen!==q.answerIdx) lab.classList.add('wrong');
       lab.textContent = opt;
       wrap.appendChild(lab);
     });
-    // отображаем "Не знаю"
-    const idkDiv = document.createElement('div'); idkDiv.className='opt';
-    idkDiv.textContent='Не знаю';
-    if (chosen==='idk' || chosen===localIdk) idkDiv.classList.add('wrong');
+    const idkDiv = document.createElement('div'); idkDiv.className='opt'; idkDiv.textContent='Не знаю';
+    if (chosen==='idk') idkDiv.classList.add('wrong');
     wrap.appendChild(idkDiv);
     container.appendChild(wrap);
   });
@@ -480,7 +480,7 @@ async function aiAudit(rawReport) {
   try {
     res = await fetch(AI_ENDPOINT, {
       method: "POST",
-      headers: { "Content-Type": "text/plain" }, // без preflight
+      headers: { "Content-Type": "text/plain" },
       body: JSON.stringify({ intent: "final-assess", data: { rawReport, meta } })
     });
   } catch (e) {
