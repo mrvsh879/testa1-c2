@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Тест з німецької мови — рівень A1–C2</title>
+  <style>
+    :root { --bg:#0b0f19; --panel:#121829; --text:#e6e9f2; --muted:#9aa3b2; --brand:#6ea8fe; --brand-2:#22d3ee; --border:#1f2a44; }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:
+        radial-gradient(1200px 600px at 10% -10%, rgba(34,211,238,.08), transparent),
+        radial-gradient(1200px 600px at 90% 110%, rgba(110,168,254,.08), transparent),
+        var(--bg);
+      color:var(--text);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;
+      line-height:1.6
+    }
+    .wrap{max-width:900px;margin:40px auto;padding:24px}
+    .card{
+      background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01));
+      border:1px solid var(--border);
+      backdrop-filter:blur(8px);
+      border-radius:18px;
+      box-shadow:0 12px 40px rgba(0,0,0,.35);
+      overflow:hidden
+    }
+    header{padding:22px 22px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+    h1{font-size:22px;margin:0;letter-spacing:.2px}
+    .muted{color:var(--muted);font-size:14px}
+    .progress{width:100%;height:8px;background:#0e1526;border:1px solid var(--border);border-radius:999px;overflow:hidden;margin:8px 0 0}
+    .progress>i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--brand),var(--brand-2))}
+    .body{padding:22px}
+    .q-title{font-size:20px;font-weight:700;margin:0 0 8px}
+    .q-note{margin:0 0 16px;color:var(--muted)}
+    .options{display:grid;gap:12px}
+    .opt{border:1px solid var(--border);border-radius:14px;padding:14px;background:#0e1526;display:flex;align-items:center;gap:12px}
+    .opt input{width:18px;height:18px;accent-color:var(--brand)}
+    .btn{
+      appearance:none;border:1px solid var(--border);color:var(--text);
+      background:linear-gradient(180deg,#1a2340,#15203b);
+      padding:12px 16px;border-radius:12px;cursor:pointer;font-weight:600;transition:opacity .2s ease
+    }
+    .btn[disabled]{opacity:.6;cursor:not-allowed}
+    .footer{padding:16px 22px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;color:var(--muted)}
+    .hidden{display:none !important}
+    .kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0}
+    .kpi{text-align:center;padding:14px;border:1px solid var(--border);border-radius:12px;background:#0e1526}
+    .kpi b{font-size:20px;display:block}
+    .table{width:100%;border-collapse:collapse}
+    .table th,.table td{border-bottom:1px solid var(--border);padding:10px;text-align:left;vertical-align:top}
+    .pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px}
+    .pill.ok{background:rgba(34,197,94,.15);color:#86efac}
+    .pill.bad{background:rgba(239,68,68,.15);color:#fca5a5}
+    .timer{margin-left:auto;font-weight:700}
+    .email-badge{margin-left:auto;background:#0e1526;border:1px solid var(--border);padding:6px 10px;border-radius:999px;font-size:12px}
+    .signin-wrap{display:flex;align-items:center;gap:12px}
+    .warning{background:rgba(255,255,255,.03);border:1px dashed var(--border);padding:10px 12px;border-radius:12px;margin-top:10px;font-size:13px;color:var(--muted)}
+    .two-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .slot{background:#0e1526;border:1px dashed #2a3553;border-radius:10px;min-height:44px;display:flex;align-items:center;padding:8px}
+    .draggable{padding:10px 12px;background:#121a33;border:1px solid #2a3553;border-radius:10px;cursor:grab}
+    .row{display:grid;gap:10px;margin:12px 0}
+    .fld{display:flex;gap:10px}
+    .fld input{flex:1;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:#0e1526;color:#e6e9f2}
+    .level-badge{display:inline-block;padding:6px 10px;border-radius:999px;border:1px solid var(--border);background:#0e1526;font-weight:700}
+  </style>
+  <!-- Google Identity Services (опціонально) -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <!-- SortableJS для order/match -->
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" id="app">
+      <header>
+        <div>
+          <h1>Тест з німецької мови — визначення рівня (A1–C2)</h1>
+          <div class="muted">Увійдіть через Google або вкажіть пошту. На проходження — 15 хвилин. Перезапуск заблоковано до завершення таймера.</div>
+          <div class="progress"><i id="bar"></i></div>
+        </div>
+        <div id="userBlock" class="signin-wrap">
+          <div id="g_id_onload"
+               data-client_id="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"
+               data-callback="handleCredentialResponse"
+               data-auto_prompt="false"></div>
+          <div class="g_id_signin" data-type="standard" data-size="medium" data-shape="pill" data-theme="outline" data-logo_alignment="left"></div>
+          <div class="fld" id="manualEmail">
+            <input id="emailInput" type="email" placeholder="ваша_пошта@company.com" />
+            <button class="btn" id="startBtn">Старт</button>
+          </div>
+          <span id="emailBadge" class="email-badge hidden"></span>
+          <span id="timer" class="timer hidden">15:00</span>
+        </div>
+      </header>
+
+      <div class="body" id="stage"></div>
+
+      <div class="footer">
+        <div class="muted" id="status">Питання 1 із N</div>
+        <div>
+          <button class="btn" id="restartBtn" title="Скидання заборонено" disabled>Скинути</button>
+          <button class="btn" id="nextBtn" disabled>Далі →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // -------- Конфіг: НІЯКИХ зовнішніх вебхуків, локальний підрахунок --------
+    const QUIZ = {
+      title: "Тест з німецької мови (A1–C2)",
+      durationMin: 15,
+      questions: [
+        // 1
+        { type:'single', text:'Wie heißt du?', options:[
+          'Ich heiße Berlin',
+          'Ich heiße Anna',
+          'Du heißt gut',
+          'Mein heißt Auto'
+        ]},
+        // 2
+        { type:'single', text:'Was machst du am Wochenende?', options:[
+          'Ich gehe ins Kino',
+          'Ich bin ein Auto',
+          'Ich sehr gern',
+          'Du schwimmen'
+        ]},
+        // 3
+        { type:'multiple', text:'Welche Wörter sind Artikel im Deutschen?', options:[
+          'der', 'die', 'das', 'den', 'ein'
+        ]},
+        // 4
+        { type:'single', text:'Як німецькою: «Я йду до школи»?', options:[
+          'Ich gehe zur Schule',
+          'Ich kommt Schule',
+          'Ich geh Schule',
+          'Ich fahre Schule'
+        ]},
+        // 5
+        { type:'order', text:'Розташуйте частини речення у правильному порядку: «Ich gehe morgen ins Kino»', items:[
+          'morgen','Ich','ins Kino','gehe'
+        ]},
+        // 6
+        { type:'single', text:'Як утворити Perfekt від «gehen»?', options:[
+          'Ich habe gegangen',
+          'Ich bin gegangen',
+          'Ich geht',
+          'Ich wurde gegangen'
+        ]},
+        // 7
+        { type:'match', text:'Співвіднесіть рівень з описом', left:[
+          'A1','A2','B1','B2','C1','C2'
+        ], right:[
+          'Розуміє і використовує побутові вирази',
+          'Може підтримати коротку розмову',
+          'Може писати листи та читати прості тексти',
+          'Впевнено спілкується на професійні/абстрактні теми',
+          'Високий академічний рівень, складні тексти без труднощів',
+          'Майже як носій мови'
+        ]},
+        // 8
+        { type:'single', text:'Обери граматично правильне речення', options:[
+          'Ich liebe du',
+          'Du liebt mich',
+          'Ich liebe dich',
+          'Dich liebe ichs'
+        ]},
+        // 9
+        { type:'single', text:'Переклад: «Er arbeitet seit fünf Jahren hier.»', options:[
+          'Він працює тут уже п’ять років',
+          'Він працював тут п’ять років',
+          'Він працює через п’ять років',
+          'Він працював би тут п’ять років'
+        ]},
+        // 10
+        { type:'single', text:'Який рівень відповідає можливості дискутувати на професійні теми?', options:[
+          'A2','B1','B2','C2'
+        ]}
+      ],
+      // Еталонні відповіді (локально, без бекенду)
+      answerKey: {
+        // single: індекс правильної опції
+        single: {
+          1: 1, // q1 "Ich heiße Anna"
+          2: 0, // q2 "Ich gehe ins Kino"
+          4: 0, // q4 "Ich gehe zur Schule"
+          6: 1, // q6 "Ich bin gegangen"
+          8: 2, // q8 "Ich liebe dich"
+          9: 0, // q9 переклад
+          10: 2 // q10 B2
+        },
+        // multiple: масив індексів правильних опцій (порядок неважливий)
+        multiple: {
+          3: [0,1,2,3,4] // der, die, das, den, ein — усі артиклі/форми артикля
+        },
+        // order: правильна послідовність (точний збіг рядків)
+        order: {
+          5: ['Ich','gehe','morgen','ins Kino']
+        },
+        // match: відповідність "left -> right" (точний збіг рядків)
+        match: {
+          7: {
+            'A1':'Розуміє і використовує побутові вирази',
+            'A2':'Може підтримати коротку розмову',
+            'B1':'Може писати листи та читати прості тексти',
+            'B2':'Впевнено спілкується на професійні/абстрактні теми',
+            'C1':'Високий академічний рівень, складні тексти без труднощів',
+            'C2':'Майже як носій мови'
+          }
+        }
+      }
+    };
+
+    // -------- Глобал/DOM --------
+    const stage = document.getElementById('stage');
+    const nextBtn = document.getElementById('nextBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const statusEl = document.getElementById('status');
+    const bar = document.getElementById('bar');
+    const emailBadge = document.getElementById('emailBadge');
+    const timerEl = document.getElementById('timer');
+    const startBtn = document.getElementById('startBtn');
+    const emailInput = document.getElementById('emailInput');
+
+    const LS = { email:'quiz_user_email', end:'quiz_end_ts', idx:'quiz_idx', data:'quiz_answers', start:'quiz_start_ts' };
+
+    let order = [...Array(QUIZ.questions.length).keys()];
+    let idx = 0;
+    let answers = []; // [{index, type, picked}]
+
+    // -------- Вхід: Google або вручну --------
+    window.handleCredentialResponse = function(res){
+      try { const payload = parseJwt(res.credential); const email = payload.email; if(!email) throw new Error(); lockAndStart(email); }
+      catch(e){ alert('Помилка входу через Google. Можна вказати пошту вручну.'); }
+    };
+    startBtn.addEventListener('click', () => {
+      const email = (emailInput.value||'').trim();
+      if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { alert('Укажіть коректну робочу пошту'); return; }
+      lockAndStart(email);
+    });
+
+    function parseJwt(token){
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g,'+').replace(/_/g,'/');
+      const json = decodeURIComponent(atob(base64).split('').map(c=>'%' + ('00'+c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+      return JSON.parse(json);
+    }
+
+    function lockAndStart(email){
+      const existingEmail = localStorage.getItem(LS.email);
+      const endTs = +localStorage.getItem(LS.end) || 0;
+      const now = Date.now();
+      if(existingEmail && endTs && now < endTs && existingEmail !== email){
+        alert('Тест уже запущено під іншим аккаунтом і не може бути скинуто до завершення часу.');
+        return;
+      }
+      localStorage.setItem(LS.email, email);
+      emailBadge.textContent = email; emailBadge.classList.remove('hidden');
+      document.querySelector('.g_id_signin')?.classList.add('hidden');
+      document.getElementById('manualEmail')?.classList.add('hidden');
+
+      if(!localStorage.getItem(LS.end)){
+        const end = now + QUIZ.durationMin*60*1000;
+        localStorage.setItem(LS.end, String(end));
+        localStorage.setItem(LS.start, String(now));
+        localStorage.setItem(LS.idx, '0');
+        localStorage.setItem(LS.data, JSON.stringify([]));
+      }
+      idx = +(localStorage.getItem(LS.idx) || '0');
+      answers = JSON.parse(localStorage.getItem(LS.data) || '[]');
+      timerEl.classList.remove('hidden');
+      tickTimer();
+      render();
+    }
+
+    (function bootstrap(){
+      const email = localStorage.getItem(LS.email);
+      const endTs = +localStorage.getItem(LS.end) || 0;
+      if(email && endTs){
+        emailBadge.textContent = email; emailBadge.classList.remove('hidden');
+        document.querySelector('.g_id_signin')?.classList.add('hidden');
+        document.getElementById('manualEmail')?.classList.add('hidden');
+        timerEl.classList.remove('hidden');
+        idx = +(localStorage.getItem(LS.idx) || '0');
+        answers = JSON.parse(localStorage.getItem(LS.data) || '[]');
+        tickTimer();
+        render();
+      } else {
+        stage.innerHTML = '<div class="warning">Увійдіть через Google або вкажіть робочу пошту, щоб почати. Після старту таймер запуститься на 15 хвилин, а скидання буде недоступне.</div>';
+        statusEl.textContent = 'Авторизуйтеся, щоб почати';
+      }
+    })();
+
+    // -------- Рендер --------
+    function updateProgress(){
+      const total = order.length;
+      statusEl.textContent = `Питання ${Math.min(idx+1,total)} із ${total}`;
+      bar.style.width = `${(idx/total)*100}%`;
+    }
+
+    function render(){
+      updateProgress();
+      nextBtn.disabled = true;
+      stage.innerHTML = '';
+      if(idx >= order.length){ return renderResultLocal(); }
+
+      const q = QUIZ.questions[order[idx]];
+      const block = document.createElement('div');
+      const h = document.createElement('h2'); h.className='q-title'; h.textContent = q.text; block.appendChild(h);
+      const note = document.createElement('div'); note.className='q-note muted';
+      note.textContent =
+        q.type==='match' ? 'Перетягніть картки праворуч у відповідні слоти ліворуч' :
+        q.type==='order' ? 'Перетягніть пункти, щоб виставити порядок' :
+        q.type==='multiple' ? 'Можна обрати кілька варіантів' :
+        'Оберіть один варіант';
+      block.appendChild(note);
+
+      const options = document.createElement('div'); options.className='options';
+
+      if(q.type==='single' || q.type==='multiple'){
+        const isMulti = q.type==='multiple';
+        q.options.forEach((opt,i)=>{
+          const label=document.createElement('label'); label.className='opt';
+          const input=document.createElement('input'); input.type=isMulti?'checkbox':'radio'; input.name='q'; input.value=i;
+          const span=document.createElement('span'); span.textContent=opt;
+          label.appendChild(input); label.appendChild(span); options.appendChild(label);
+        });
+      }
+      if(q.type==='order'){
+        const list = document.createElement('div'); list.id='orderList'; list.className='options';
+        q.items.forEach(txt=>{ const d=document.createElement('div'); d.className='draggable'; d.textContent=txt; list.appendChild(d); });
+        options.appendChild(list); new Sortable(list,{animation:150});
+      }
+      if(q.type==='match'){
+        const wrap = document.createElement('div'); wrap.className='two-cols';
+        const leftCol = document.createElement('div'); const rightCol = document.createElement('div');
+        q.left.forEach(l=>{ const slot=document.createElement('div'); slot.className='slot'; slot.setAttribute('data-left',l); slot.textContent=l+' — '; leftCol.appendChild(slot); });
+        const pool=document.createElement('div'); pool.id='matchPool'; pool.className='options';
+        q.right.forEach(r=>{ const it=document.createElement('div'); it.className='draggable'; it.textContent=r; it.setAttribute('data-right',r); pool.appendChild(it); });
+        rightCol.appendChild(pool); wrap.appendChild(leftCol); wrap.appendChild(rightCol); options.appendChild(wrap);
+        new Sortable(pool,{group:'m',animation:150});
+        leftCol.querySelectorAll('.slot').forEach(s=>{ new Sortable(s,{group:'m',animation:150,put:true,sort:true}); });
+      }
+
+      block.appendChild(options); stage.appendChild(block);
+
+      if(q.type==='single'){
+        options.addEventListener('change', ()=>{ nextBtn.disabled = !options.querySelector('input:checked'); });
+      } else if(q.type==='multiple'){
+        options.addEventListener('change', ()=>{ nextBtn.disabled = options.querySelectorAll('input:checked').length === 0; });
+      } else {
+        nextBtn.disabled = false; // order / match
+      }
+
+      nextBtn.onclick = () => saveAndNext();
+      restartBtn.onclick = () => {};
+
+      function saveAndNext(){
+        let picked;
+        if(q.type==='single'){
+          const sel = options.querySelector('input:checked'); picked = sel ? [ +sel.value ] : [];
+        } else if(q.type==='multiple'){
+          picked = [...options.querySelectorAll('input:checked')].map(i=>+i.value);
+        } else if(q.type==='order'){
+          picked = Array.from(options.querySelectorAll('#orderList .draggable')).map(el=>el.textContent);
+        } else if(q.type==='match'){
+          picked = {}; options.querySelectorAll('.slot').forEach(slot=>{
+            const l=slot.getAttribute('data-left'); const it=slot.querySelector('.draggable');
+            picked[l] = it ? it.getAttribute('data-right') : '';
+          });
+        }
+        const record = { index: order[idx], type: q.type, picked };
+        answers[idx] = record;
+        localStorage.setItem(LS.data, JSON.stringify(answers));
+        idx++; localStorage.setItem(LS.idx, String(idx));
+        render();
+      }
+    }
+
+    // -------- Підрахунок і результат (локально) --------
+    function arraysEqual(a,b){
+      if(a.length!==b.length) return false;
+      for(let i=0;i<a.length;i++){ if(a[i]!==b[i]) return false; }
+      return true;
+    }
+    function setsEqual(a,b){
+      if(a.length!==b.length) return false;
+      const sA=new Set(a), sB=new Set(b);
+      for(const x of sA){ if(!sB.has(x)) return false; }
+      return true;
+    }
+    function matchEqual(pickedObj, correctObj){
+      const keys = Object.keys(correctObj);
+      for(const k of keys){
+        const pv = (pickedObj[k]||'').trim();
+        const cv = (correctObj[k]||'').trim();
+        if(pv!==cv) return false;
+      }
+      return true;
+    }
+    function interpretLevel(percent){
+      if (percent < 30) return "A1 — початковий";
+      if (percent < 50) return "A2 — базовий";
+      if (percent < 70) return "B1 — середній";
+      if (percent < 85) return "B2 — вище середнього";
+      if (percent < 95) return "C1 — просунутий";
+      return "C2 — майже носій";
+    }
+
+    function localCheckBreakdown(){
+      // Повертає масив {id, ok} для кожного питання
+      const breakdown = [];
+      const qCount = QUIZ.questions.length;
+      for(let i=0;i<qCount;i++){
+        const rec = answers[i];
+        const qIdx = (rec?.index ?? i) + 1;
+        const type = rec?.type;
+        let ok = false;
+        if(rec && type==='single'){
+          const correct = QUIZ.answerKey.single[qIdx];
+          const picked = (rec.picked||[])[0];
+          ok = (picked === correct);
+        } else if(rec && type==='multiple'){
+          const correct = QUIZ.answerKey.multiple[qIdx] || [];
+          const picked = rec.picked || [];
+          ok = setsEqual(picked, correct);
+        } else if(rec && type==='order'){
+          const correct = QUIZ.answerKey.order[qIdx] || [];
+          const picked = rec.picked || [];
+          ok = arraysEqual(picked, correct);
+        } else if(rec && type==='match'){
+          const correct = QUIZ.answerKey.match[qIdx] || {};
+          const picked = rec.picked || {};
+          ok = matchEqual(picked, correct);
+        }
+        breakdown.push({ id:`q${qIdx}`, ok });
+      }
+      return breakdown;
+    }
+
+    function renderResultLocal(){
+      bar.style.width = '100%';
+      const breakdown = localCheckBreakdown();
+      const totalOk = breakdown.filter(b=>b.ok).length;
+      const total = QUIZ.questions.length;
+      const percent = Math.round((totalOk/total)*100);
+      const levelText = interpretLevel(percent);
+
+      stage.innerHTML = `
+        <h2>Ваш рівень: <span class="level-badge">${levelText}</span></h2>
+        <div class="muted">Дякуємо за проходження тесту! Нижче — короткі підсумки.</div>
+        <div class="kpis">
+          <div class="kpi"><b>${totalOk}/${total}</b><div class="muted">Правильних</div></div>
+          <div class="kpi"><b>${percent}%</b><div class="muted">Відсоток</div></div>
+          <div class="kpi"><b>${timeTaken()}</b><div class="muted">Час</div></div>
+        </div>
+        <table class="table">
+          <thead><tr><th>#</th><th>Тип</th><th>Статус</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+        <div class="warning">Тест заблоковано — перезапуск буде доступний після завершення таймера.</div>
+      `;
+      const rows = document.getElementById('rows');
+      breakdown.forEach((b,i)=>{
+        const q = QUIZ.questions[i];
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${i+1}</td>
+          <td>${q.type}</td>
+          <td>${b.ok?'<span class="pill ok">вірно</span>':'<span class="pill bad">помилка</span>'}</td>
+        `;
+        rows.appendChild(tr);
+      });
+    }
+
+    // -------- Таймер --------
+    function tickTimer(){
+      const end = +localStorage.getItem(LS.end) || 0;
+      if(!end) return;
+      const left = Math.max(0, end - Date.now());
+      const mm = String(Math.floor(left/60000)).padStart(2,'0');
+      const ss = String(Math.floor((left%60000)/1000)).padStart(2,'0');
+      timerEl.textContent = `${mm}:${ss}`;
+      if(left<=0){ idx = order.length; localStorage.setItem(LS.idx, String(idx)); render(); return; }
+      setTimeout(tickTimer, 250);
+    }
+    function timeTaken(){
+      const start = +localStorage.getItem(LS.start) || Date.now();
+      const s = Math.max(0, Math.floor((Date.now()-start)/1000));
+      const mm = String(Math.floor(s/60)).padStart(2,'0');
+      const ss = String(s%60).padStart(2,'0');
+      return `${mm}:${ss}`;
+    }
+  </script>
+</body>
+</html>
