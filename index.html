@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>CEFR Тест уровня языка A1–C2 (DE) — с AI-аудитом</title>
-<meta name="description" content="Профессиональный CEFR тест A1–C2: 48 вопросов, антиугадывание, надёжность, AI-аудит результата." />
+<meta name="description" content="Профессиональный CEFR тест A1–C2: 48 вопросов, антиугадывание, надёжность, AI-аудит результата и взвешенный индекс." />
 <style>
   :root{--bg:#0f1221;--card:#171a2e;--muted:#8b91b2;--text:#e9ecf7;--accent:#6ea8fe;--ok:#2ecc71;--bad:#ff6b6b;--warn:#ffd166}
   *{box-sizing:border-box}
@@ -54,7 +54,7 @@
 <div class="wrap">
   <div class="card" id="screen-intro">
     <h1>Тест уровня языка A1–C2 (немецкий, CEFR)</h1>
-    <p class="muted">48 вопросов (по 8 на каждый уровень). Антиугадывание. Итог дополнительно проверит AI.</p>
+    <p class="muted">48 вопросов (по 8 на уровень). Антиугадывание. Итог проверит AI. Плюс «взвешенный индекс» — мягкая оценка.</p>
     <div class="row">
       <div class="col grid">
         <div class="kpi"><span>Формат:</span><span class="v">Multiple choice + «Не знаю»</span></div>
@@ -87,7 +87,7 @@
     </div>
     <div id="questionHost" class="grid" style="margin-top:12px"></div>
     <div class="footer">
-      <div class="muted small">Уровень: <span id="lvlTag" class="level-tag">—</span></div>
+      <div class="muted small">Уровень вопроса: <span id="lvlTag" class="level-tag">—</span></div>
       <div>
         <button class="btn ghost" id="prevBtn">← Назад</button>
         <button class="btn" id="nextBtn">Далее →</button>
@@ -130,16 +130,16 @@
 </div>
 
 <script>
-  // ⛳ ВСТАВЬТЕ ВАШ URL Apps Script (заканчивается на /exec)
+  // ⛳ Ваш Apps Script Web App URL (уже подставлен)
   const AI_ENDPOINT = "https://script.google.com/macros/s/AKfycbyyzBueArpRlxI2xbyHo3lKWv_XQqnNUf1esQqgqTF3mIir2ogng7lFT4aoN4GdJ8Vntw/exec";
 
-  // Показать предупреждение, если забыли вставить
+  // Предупреждение, если URL не указан
   (function(){
     const warn = document.getElementById('aiWarn');
-    if(!AI_ENDPOINT || AI_ENDPOINT.includes('PASTE_YOUR_APPS_SCRIPT_URL_HERE')){
-      warn.textContent = "AI-аудит пока не подключён: вставьте ваш Web App URL (Apps Script) в константу AI_ENDPOINT.";
+    if(!AI_ENDPOINT || !AI_ENDPOINT.includes('/exec')){
+      warn.textContent = "AI-аудит не подключён: вставьте Web App URL (Apps Script) в AI_ENDPOINT.";
     } else {
-      warn.textContent = "AI подключён. После завершения теста будет AI-аудит.";
+      warn.textContent = "AI подключён. После завершения теста появится AI-аудит.";
     }
   })();
 
@@ -163,41 +163,41 @@
     {id:"A2-7",level:"A2",q:"Предлоги направления: Ich gehe ___ Schule.",options:["zur","bei der","von der","auf der","Не знаю"],answerIdx:0},
     {id:"A2-8",level:"A2",q:"Правильный артикль в Akkusativ (f): Ich sehe ___ Frau.",options:["die","der","eine","eine Frau","Не знаю"],answerIdx:2},
 
-    {id:"B1-1",level:"B1",q:"Придаточное с weil: Ich bleibe zu Hause, weil ich ___.",options:["bin müde","мüde bin","bin der müde","мüde ist","Не знаю"],answerIdx:1},
+    {id:"B1-1",level:"B1",q:"Придаточное с weil: Ich bleibe zu Hause, weil ich ___.",options:["bin müde","müde bin","bin der müde","müde ist","Не знаю"],answerIdx:1},
     {id:"B1-2",level:"B1",q:"Präteritum модальных: Früher ___ ich nicht gut schwimmen.",options:["kann","konnte","könnte","kannte","Не знаю"],answerIdx:1},
-    {id:"B1-3",level:"B1",q:"Относительное предложение: Der Mann, ___ dort steht, ist mein Lehrer.",options:["der","den","dem","dessen","Не знаю"],answerIdx:0},
+    {id:"B1-3",level:"B1",q:"Относительное: Der Mann, ___ dort steht, ist mein Lehrer.",options:["der","den","dem","dessen","Не знаю"],answerIdx:0},
     {id:"B1-4",level:"B1",q:"Пассив Präsens: Der Brief ___ von ihm geschrieben.",options:["wird","ist geschrieben","wird geschrieben","war geschrieben","Не знаю"],answerIdx:2},
     {id:"B1-5",level:"B1",q:"Genitiv: Das ist das Auto ___ Freundin.",options:["meine","meiner","meines","meinem","Не знаю"],answerIdx:1},
-    {id:"B1-6",level:"B1",q:"Прилагательные (best. Art.): der ___ Film",options:["interessanter","interessante","interessantes","interessantem","Не знаю"],answerIdx:1},
+    {id:"B1-6",level:"B1",q:"Прилагательные: der ___ Film",options:["interessanter","interessante","interessantes","interessantem","Не знаю"],answerIdx:1},
     {id:"B1-7",level:"B1",q:"Konjunktiv II (вежливо): ___ Sie mir bitte helfen?",options:["Könnten","Kannst","Würdest","Darfst","Не знаю"],answerIdx:0},
     {id:"B1-8",level:"B1",q:"Союз dass: Er sagt, ___ er morgen kommt.",options:["dass","das","wie","ob","Не знаю"],answerIdx:0},
 
     {id:"B2-1",level:"B2",q:"Иерархия полей: Heute ___ ich, wäre ich frei, ins Kino gegangen.",options:["gehe","ginge","wäre","würde","Не знаю"],answerIdx:1},
-    {id:"B2-2",level:"B2",q:"Пассив с Zustandspassiv: Die Tür ist ___ .",options:["geöffnet","wird geöffnet","öffnete","am Öffnen","Не знаю"],answerIdx:0},
-    {id:"B2-3",level:"B2",q:"Устойчивое сочетание: eine Entscheidung ___",options:["nehmen","treffen","machen","setzen","Не знаю"],answerIdx:1},
-    {id:"B2-4",level:"B2",q:"Глагол с предлогом: warten ___ den Bus",options:["an","auf","für","über","Не знаю"],answerIdx:1},
-    {id:"B2-5",level:"B2",q:"Partizip I/II как прилагат.: die ___ Kinder (schreien)",options:["schreienden","geschrien","schreiende","geschreiende","Не знаю"],answerIdx:2},
-    {id:"B2-6",level:"B2",q:"Инверсия при нач. обстоятельстве: Morgen ___ ich keine Zeit.",options:["habe","ich habe","habe ich","ich habe Morgen","Не знаю"],answerIdx:2},
+    {id:"B2-2",level:"B2",q:"Zustandspassiv: Die Tür ist ___ .",options:["geöffnet","wird geöffnet","öffnete","am Öffnen","Не знаю"],answerIdx:0},
+    {id:"B2-3",level:"B2",q:"Коллокация: eine Entscheidung ___",options:["nehmen","treffen","machen","setzen","Не знаю"],answerIdx:1},
+    {id:"B2-4",level:"B2",q:"Глагол+предлог: warten ___ den Bus",options:["an","auf","für","über","Не знаю"],answerIdx:1},
+    {id:"B2-5",level:"B2",q:"Partizip как прилаг.: die ___ Kinder (schreien)",options:["schreienden","geschrien","schreiende","geschreiende","Не знаю"],answerIdx:2},
+    {id:"B2-6",level:"B2",q:"Инверсия: Morgen ___ ich keine Zeit.",options:["habe","ich habe","habe ich","ich habe Morgen","Не знаю"],answerIdx:2},
     {id:"B2-7",level:"B2",q:"Косвенная речь: Er sagt, er ___ spät.",options:["kommt","käme","kommen","gekommen","Не знаю"],answerIdx:0},
-    {id:"B2-8",level:"B2",q:"Синонимия: „jedoch” ближе по смыслу к…",options:["denn","aber","also","trotzdem","Не знаю"],answerIdx:1},
+    {id:"B2-8",level:"B2",q:"«jedoch» ближе к…",options:["denn","aber","also","trotzdem","Не знаю"],answerIdx:1},
 
-    {id:"C1-1",level:"C1",q:"Лексика: „nachhaltig” ближе к…",options:["kurzfristig","dauerhaft","zufällig","oberflächlich","Не знаю"],answerIdx:1},
+    {id:"C1-1",level:"C1",q:"Лексика: «nachhaltig» ближе к…",options:["kurzfristig","dauerhaft","zufällig","oberflächlich","Не знаю"],answerIdx:1},
     {id:"C1-2",level:"C1",q:"Коннекторы: ___ er krank war, arbeitete er weiter.",options:["Obwohl","Während","Damit","Sobald","Не знаю"],answerIdx:0},
-    {id:"C1-3",level:"C1",q:"Номинализация: „die Zusammenarbeit verbessern” → „die ___ der Zusammenarbeit”.",options:["Verbesserung","Verbesserlichkeit","Verbesserungheit","Verbesserungung","Не знаю"],answerIdx:0},
-    {id:"C1-4",level:"C1",q:"Идиома: „Das ist nicht mein Bier” значит…",options:["Это не моё дело","Это очень важно","Это мой выбор","Это дорого","Не знаю"],answerIdx:0},
-    {id:"C1-5",level:"C1",q:"Стилевое: Научный синоним к „wichtig”",options:["wesentlich","nett","locker","billig","Не знаю"],answerIdx:0},
-    {id:"C1-6",level:"C1",q:"Причинно-след.: „Folglich” выражает…",options:["противопоставление","следствие","уступку","условие","Не знаю"],answerIdx:1},
-    {id:"C1-7",level:"C1",q:"Глаг.+предлог: sich auseinandersetzen ___ einem Thema",options:["über","mit","für","an","Не знаю"],answerIdx:1},
-    {id:"C1-8",level:"C1",q:"Союзная группа: „sowohl … als auch …” значит…",options:["или … или","как … так и","не только … но и","хотя … но","Не знаю"],answerIdx:1},
+    {id:"C1-3",level:"C1",q:"Номинализация: «die Zusammenarbeit verbessern» → «die ___ der Zusammenarbeit».",options:["Verbesserung","Verbesserlichkeit","Verbesserungheit","Verbesserungung","Не знаю"],answerIdx:0},
+    {id:"C1-4",level:"C1",q:"Идиома: «Das ist nicht mein Bier» значит…",options:["Это не моё дело","Это очень важно","Это мой выбор","Это дорого","Не знаю"],answerIdx:0},
+    {id:"C1-5",level:"C1",q:"Научный синоним к «wichtig»",options:["wesentlich","nett","locker","billig","Не знаю"],answerIdx:0},
+    {id:"C1-6",level:"C1",q:"«Folglich» выражает…",options:["противопоставление","следствие","уступку","условие","Не знаю"],answerIdx:1},
+    {id:"C1-7",level:"C1",q:"sich auseinandersetzen ___ einem Thema",options:["über","mit","für","an","Не знаю"],answerIdx:1},
+    {id:"C1-8",level:"C1",q:"«sowohl … als auch …» значит…",options:["или … или","как … так и","не только … но и","хотя … но","Не знаю"],answerIdx:1},
 
     {id:"C2-1",level:"C2",q:"Стилистика: наиболее формальное?",options:["begreifen","kapieren","verstehen","ersinnen","Не знаю"],answerIdx:3},
-    {id:"C2-2",level:"C2",q:"Тонкая семантика: „unterstellen” ближе к…",options:["vermuten (с оттенком обвинения)","übergeben","unterstützen","abwarten","Не знаю"],answerIdx:0},
-    {id:"C2-3",level:"C2",q:"Контекст: „Er agiert mit Bedacht.”",options:["импульсивно","обдуманно","пасивно","громко","Не знаю"],answerIdx:1},
-    {id:"C2-4",level:"C2",q:"„haushaltspolitische Konsolidierung” — это…",options:["рост расходов","сокращение дефицита","рост налоговых льгот","монетизация долга","Не знаю"],answerIdx:1},
-    {id:"C2-5",level:"C2",q:"Замена указ. слова: „Diese Entwicklung, ___ zufolge …”",options:["deren","derer","welcher","wohin","Не знаю"],answerIdx:0},
-    {id:"C2-6",level:"C2",q:"„zunehmend heterogen” значит…",options:["всё более неоднородный","всё более однородный","единообразный","несопоставимый","Не знаю"],answerIdx:0},
-    {id:"C2-7",level:"C2",q:"Коллокация: „etw. in Erwägung ___”",options:["bringen","nehmen","setzen","stellen","Не знаю"],answerIdx:0},
-    {id:"C2-8",level:"C2",q:"Академ. лексика: „maßgeblich” ближе к…",options:["zufällig","entscheidend","fraglich","überschaubar","Не знаю"],answerIdx:1},
+    {id:"C2-2",level:"C2",q:"«unterstellen» ближе к…",options:["vermuten (с оттенком обвинения)","übergeben","unterstützen","abwarten","Не знаю"],answerIdx:0},
+    {id:"C2-3",level:"C2",q:"Контекст: «Er agiert mit Bedacht.»",options:["импульсивно","обдуманно","пассивно","громко","Не знаю"],answerIdx:1},
+    {id:"C2-4",level:"C2",q:"«haushaltspolitische Konsolidierung» — это…",options:["рост расходов","сокращение дефицита","рост налоговых льгот","монетизация долга","Не знаю"],answerIdx:1},
+    {id:"C2-5",level:"C2",q:"Замена указ. слова: «Diese Entwicklung, ___ zufolge …»",options:["deren","derer","welcher","wohin","Не знаю"],answerIdx:0},
+    {id:"C2-6",level:"C2",q:"«zunehmend heterogen» значит…",options:["всё более неоднородный","всё более однородный","единообразный","несопоставимый","Не знаю"],answerIdx:0},
+    {id:"C2-7",level:"C2",q:"Коллокация: «etw. in Erwägung ___»",options:["bringen","nehmen","setzen","stellen","Не знаю"],answerIdx:0},
+    {id:"C2-8",level:"C2",q:"«maßgeblich» ближе к…",options:["zufällig","entscheidend","fraglich","überschaubar","Не знаю"],answerIdx:1},
   ];
 
   // ---------- Состояние/ссылки ----------
@@ -305,13 +305,31 @@
       bandRates[b]={ok,total,rate: total? ok/total : 0};
     });
 
+    // --- ВАРИАНТ B: ВЗВЕШЕННЫЙ УРОВЕНЬ ---
+    const bandToIdx = { A1:1, A2:2, B1:3, B2:4, C1:5, C2:6 };
+    let num=0, den=0;
+    for(const b of Object.keys(bandRates)){
+      const r = bandRates[b].rate; // 0..1
+      num += (bandToIdx[b]||0) * r;
+      den += r;
+    }
+    const weightedIdx = den ? num/den : 0;
+    function idxToBand(x){
+      if (x < 1.5) return "A1";
+      if (x < 2.5) return "A2";
+      if (x < 3.5) return "B1";
+      if (x < 4.5) return "B2";
+      if (x < 5.5) return "C1";
+      return "C2";
+    }
+    const weightedLevel = den ? idxToBand(weightedIdx) : "A0";
+
+    // --- «жёсткий» по порогам (оставляем для сравнения) ---
     const passReq = {A1:.70,A2:.65,B1:.60,B2:.60,C1:.55,C2:.50};
     const orderBands=["A1","A2","B1","B2","C1","C2"];
     let achieved="A0";
-    for(let i=0;i<orderBands.length;i++){
-      const upto = orderBands[i];
-      const allPass = orderBands.slice(0,i+1).every(b=>bandRates[b].rate>=passReq[b]);
-      if(allPass) achieved=upto; else break;
+    for (const b of orderBands) {
+      if ((bandRates[b]?.rate || 0) >= passReq[b]) achieved = b;
     }
 
     const totalSec = Math.floor((Date.now()-state.startedAt)/1000);
@@ -327,7 +345,10 @@
     const norm = clamp((penalized + (QUESTIONS.length*0.33)) / (maxRaw+QUESTIONS.length*0.33), 0,1);
 
     return {
-      achieved, bandRates, penalized:+penalized.toFixed(2),
+      achieved, // жёсткий
+      weightedLevel,
+      weightedIdx:+weightedIdx.toFixed(2),
+      bandRates, penalized:+penalized.toFixed(2),
       correct, wrong, skip, total: QUESTIONS.length,
       totalSec, avgSec:+avgSec.toFixed(1), reliability:+reliability.toFixed(2),
       norm:+norm.toFixed(2), details
@@ -345,7 +366,18 @@
   function showResult(r){
     result.classList.remove('hidden');
     const levelBadges={"A1":"Начальный","A2":"Элементарный","B1":"Средний","B2":"Уверенный средний","C1":"Продвинутый","C2":"Владение","A0":"Ниже A1"};
-    headline.innerHTML = `<div class="kpi"><span>Определённый уровень (по правилам теста):</span> <span class="v" style="margin-left:6px">${r.achieved}</span> <span class="chip">${levelBadges[r.achieved]||""}</span></div>`;
+
+    // показываем взвешенный как главный
+    headline.innerHTML = `
+      <div class="kpi">
+        <span>Взвешенный уровень:</span>
+        <span class="v" style="margin-left:6px">${r.weightedLevel}</span>
+        <span class="chip">${levelBadges[r.weightedLevel]||""}</span>
+      </div>
+      <div class="small muted" style="margin-top:6px">
+        Жёсткий по порогам: <strong>${r.achieved}</strong> · Индекс = ${r.weightedIdx ?? "-"}
+      </div>
+    `;
 
     summaryBox.innerHTML = `
       <div class="grid">
@@ -364,12 +396,12 @@
 
     const recoLines=[];
     const need = (lvl)=>r.bandRates[lvl] && r.bandRates[lvl].rate < ({A1:.70,A2:.65,B1:.60,B2:.60,C1:.55,C2:.50}[lvl]);
-    if(r.achieved==="A0"||r.achieved==="A1"){recoLines.push("База: sein/haben, артикли, порядок слов; 1000–1500 слов; аудирование A1 ежедневно.");}
-    if(r.achieved==="A2"){recoLines.push("Отделяемые приставки, Perfekt, модальные, словарь ~2500 слов.");}
-    if(r.achieved==="B1"){recoLines.push("Weil/dass, относительные, Präteritum модальных, Genitiv; ежедневная речь/письмо.");}
-    if(r.achieved==="B2"){recoLines.push("Коннекторы, косвенная речь, коллокации, пассив; публицистика/аналитика.");}
-    if(r.achieved==="C1"){recoLines.push("Академическая лексика, номинализация, точность формулировок; эссе 250–300 слов.");}
-    if(r.achieved==="C2"){recoLines.push("Поддержание: дебаты, узкоспец. тексты, редактирование стиля.");}
+    if(r.weightedLevel==="A0"||r.weightedLevel==="A1"){recoLines.push("База: sein/haben, артикли, порядок слов; 1000–1500 слов; аудирование A1 ежедневно.");}
+    if(r.weightedLevel==="A2"){recoLines.push("Отделяемые приставки, Perfekt, модальные, словарь ~2500 слов.");}
+    if(r.weightedLevel==="B1"){recoLines.push("Weil/dass, относительные, Präteritum модальных, Genitiv; ежедневная речь/письмо.");}
+    if(r.weightedLevel==="B2"){recoLines.push("Коннекторы, косвенная речь, коллокации, пассив; публицистика/аналитика.");}
+    if(r.weightedLevel==="C1"){recoLines.push("Академическая лексика, номинализация, точность формулировок; эссе 250–300 слов.");}
+    if(r.weightedLevel==="C2"){recoLines.push("Поддержание: дебаты, узкоспец. тексты, редактирование стиля.");}
     Object.keys(r.bandRates).forEach(b=>{ if(need(b)) recoLines.push(`Уровень ${b}: дотянуть до целевого порога.`); });
     if(r.reliability<0.7){recoLines.push("Обнаружены признаки низкой надёжности. Рекомендуется пересдать в спокойных условиях.");}
     reco.innerHTML = `<ul>${recoLines.map(x=>`<li>${x}</li>`).join('')}</ul>`;
@@ -410,7 +442,7 @@
 
   // ---------- AI-аудит ----------
   async function aiAudit(rawReport){
-    if(!AI_ENDPOINT || AI_ENDPOINT.includes('PASTE_YOUR_APPS_SCRIPT_URL_HERE')) {
+    if(!AI_ENDPOINT || !AI_ENDPOINT.includes('/exec')) {
       aiStatus.textContent = "AI-аудит не подключён: укажите AI_ENDPOINT вверху файла.";
       return;
     }
@@ -422,22 +454,33 @@
       locale: "de-DE",
       testSpec: { totalQuestions: QUESTIONS.length, penaltyWrong: -0.33, hasIDK: true }
     };
-    const res = await fetch(AI_ENDPOINT, {
-      method: "POST",
-      headers: { "Content-Type":"application/json" },
-      body: JSON.stringify({ intent: "final-assess", data: { rawReport, meta } })
-    }).catch(()=>null);
 
-    if(!res || !res.ok){
-      aiStatus.textContent = "AI-аудит недоступен (ошибка сети).";
+    let res;
+    try {
+      res = await fetch(AI_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type":"application/json" },
+        body: JSON.stringify({ intent: "final-assess", data: { rawReport, meta } })
+      });
+    } catch(e){
+      aiStatus.textContent = "AI-аудит: fetch error.";
       return;
     }
-    const json = await res.json();
-    const out = json?.output ?? json; // Responses API может класть полезную нагрузку в .output
+
+    let payload;
+    try { payload = await res.json(); }
+    catch(e){ aiStatus.textContent = "AI-аудит: не удалось прочитать JSON."; return; }
+
+    const out = payload?.output ?? payload;
+    if(!res.ok){
+      aiStatus.textContent = "AI-аудит HTTP " + res.status + ": " + (out?.error || 'unknown');
+      return;
+    }
     if(!out || out.error){
-      aiStatus.textContent = "AI-аудит: ошибка ответа.";
+      aiStatus.textContent = "AI-аудит: " + (out?.error || "ошибка ответа");
       return;
     }
+
     aiStatus.classList.add('hidden');
     aiBox.classList.remove('hidden');
     const adj = out.adjustments || {};
