@@ -1,0 +1,83 @@
+{
+  "appTitle": "Тест уровня языка A1–C2 ({{LANG}})",
+  "appDescr": "48 вопросов (по 8 на уровень). Антиугадывание. Итог проверит AI. Плюс «взвешенный индекс» — мягкая оценка.",
+  "format": "Формат",
+  "formatDesc": "Multiple choice + «Не знаю» + «Пропустить»",
+  "penalty": "Штраф за ошибку",
+  "penaltyValue": "−0.33",
+  "aiAudit": "AI-аудит",
+  "aiAuditDesc": "коррекция уровня и доверия",
+  "honestyNoteStrong": "Честность важна:",
+  "honestyNote": "без переводчиков, не подсматривайте. AI анализирует скорость/паттерны.",
+  "honestyCheck": "Подтверждаю честное прохождение без посторонней помощи.",
+
+  "start": "Начать тест",
+  "next": "Далее →",
+  "prev": "← Назад",
+  "skip": "Пропустить",
+  "idk": "Не знаю",
+  "finish": "Завершить тест",
+
+  "progressQ": "Вопрос",
+  "of": "из",
+  "questionLevel": "Уровень вопроса",
+
+  "timer": "Время",
+  "speed": "скорость",
+  "secPerQ": "c/вопр",
+
+  "resultTitle": "Ваш результат",
+  "weightedLevel": "Взвешенный уровень",
+  "strictBand": "Жёсткий по порогам",
+  "weightedIndex": "Индекс",
+  "belowA1": "Ниже A1",
+
+  "scoreWithPenalty": "Баллы с антиугадыванием",
+  "answersBreakdown": "Правильно / Ошибки / Не знаю / Пропущено",
+  "correct": "Правильно",
+  "wrong": "Ошибки",
+  "dontKnow": "Не знаю",
+  "skipped": "Пропущено",
+  "time": "Время",
+  "timeAvg": "ср.",
+  "reliability": "Надёжность прохождения",
+
+  "profileByBands": "Профиль по уровням",
+  "bandLevel": "Уровень",
+  "bandCorrect": "Верно",
+  "bandTotal": "Всего",
+  "bandAccuracy": "Точность",
+
+  "recommendations": "Рекомендации",
+
+  "aiPanelTitle": "AI-аудит результата",
+  "aiAnalyzing": "Анализ результата AI…",
+  "aiLevel": "AI-уровень",
+  "aiConfidence": "Доверие AI",
+  "aiFlags": "Флаги",
+  "aiCorrections": "Коррекции по диапазонам (AI)",
+  "aiConnected": "AI подключён. После завершения теста появится AI-аудит.",
+  "aiNotConnected": "AI-аудит не подключён: вставьте Web App URL (Apps Script) в AI_ENDPOINT.",
+  "aiFetchError": "AI-аудит: ошибка сети или URL.",
+  "aiJsonParseError": "AI-аудит: не удалось прочитать JSON.",
+  "aiHttpError": "AI-аудит HTTP {{STATUS}}: {{MESSAGE}}",
+  "aiResponseError": "AI-аудит: {{MESSAGE}}",
+  "aiNoComment": "Без комментариев.",
+
+  "review": "Просмотреть ответы",
+  "print": "Печать / PDF",
+  "download": "Скачать отчёт (.json)",
+  "restart": "Пройти заново",
+
+  "noAnswer": "— без ответа —",
+  "badReliabilityHint": "Обнаружены признаки низкой надёжности. Рекомендуется пересдать в спокойных условиях.",
+
+  "levelBadgeA1": "Начальный",
+  "levelBadgeA2": "Элементарный",
+  "levelBadgeB1": "Средний",
+  "levelBadgeB2": "Уверенный средний",
+  "levelBadgeC1": "Продвинутый",
+  "levelBadgeC2": "Владение",
+
+  "alertHonesty": "Поставьте галочку о честном прохождении."
+}
