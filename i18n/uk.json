@@ -1,0 +1,83 @@
+{
+  "appTitle": "Тест рівня мови A1–C2 ({{LANG}})",
+  "appDescr": "48 запитань (по 8 на рівень). Антивгадування. Підсумок перевірить AI. Також «зважений індекс» — м’яка оцінка.",
+  "format": "Формат",
+  "formatDesc": "Multiple choice + «Не знаю» + «Пропустити»",
+  "penalty": "Штраф за помилку",
+  "penaltyValue": "−0.33",
+  "aiAudit": "AI-аудит",
+  "aiAuditDesc": "корекція рівня та довіри",
+  "honestyNoteStrong": "Чесність важлива:",
+  "honestyNote": "без перекладачів, не підглядайте. AI аналізує швидкість та шаблони відповідей.",
+  "honestyCheck": "Підтверджую чесне проходження без сторонньої допомоги.",
+
+  "start": "Почати тест",
+  "next": "Далі →",
+  "prev": "← Назад",
+  "skip": "Пропустити",
+  "idk": "Не знаю",
+  "finish": "Завершити тест",
+
+  "progressQ": "Питання",
+  "of": "з",
+  "questionLevel": "Рівень запитання",
+
+  "timer": "Час",
+  "speed": "швидкість",
+  "secPerQ": "с/пит.",
+
+  "resultTitle": "Ваш результат",
+  "weightedLevel": "Зважений рівень",
+  "strictBand": "Жорсткий за порогами",
+  "weightedIndex": "Індекс",
+  "belowA1": "Нижче A1",
+
+  "scoreWithPenalty": "Бали з антивгадуванням",
+  "answersBreakdown": "Правильно / Помилки / Не знаю / Пропущено",
+  "correct": "Правильно",
+  "wrong": "Помилки",
+  "dontKnow": "Не знаю",
+  "skipped": "Пропущено",
+  "time": "Час",
+  "timeAvg": "сер.",
+  "reliability": "Надійність проходження",
+
+  "profileByBands": "Профіль за рівнями",
+  "bandLevel": "Рівень",
+  "bandCorrect": "Вірно",
+  "bandTotal": "Всього",
+  "bandAccuracy": "Точність",
+
+  "recommendations": "Рекомендації",
+
+  "aiPanelTitle": "AI-аудит результату",
+  "aiAnalyzing": "Аналіз результату AI…",
+  "aiLevel": "AI-рівень",
+  "aiConfidence": "Довіра AI",
+  "aiFlags": "Прапори",
+  "aiCorrections": "Корекції за діапазонами (AI)",
+  "aiConnected": "AI підключено. Після завершення тесту з’явиться AI-аудит.",
+  "aiNotConnected": "AI-аудит не підключено: вставте Web App URL (Apps Script) у AI_ENDPOINT.",
+  "aiFetchError": "AI-аудит: помилка мережі або URL.",
+  "aiJsonParseError": "AI-аудит: не вдалося прочитати JSON.",
+  "aiHttpError": "AI-аудит HTTP {{STATUS}}: {{MESSAGE}}",
+  "aiResponseError": "AI-аудит: {{MESSAGE}}",
+  "aiNoComment": "Без коментарів.",
+
+  "review": "Переглянути відповіді",
+  "print": "Друк / PDF",
+  "download": "Завантажити звіт (.json)",
+  "restart": "Пройти знову",
+
+  "noAnswer": "— без відповіді —",
+  "badReliabilityHint": "Виявлено ознаки низької надійності. Рекомендується перепройти у спокійних умовах.",
+
+  "levelBadgeA1": "Початковий",
+  "levelBadgeA2": "Елементарний",
+  "levelBadgeB1": "Середній",
+  "levelBadgeB2": "Впевнений середній",
+  "levelBadgeC1": "Просунутий",
+  "levelBadgeC2": "Володіння",
+
+  "alertHonesty": "Поставте позначку про чесне проходження."
+}
