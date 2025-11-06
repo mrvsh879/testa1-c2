@@ -1,0 +1,83 @@
+{
+  "appTitle": "Language Level Test A1–C2 ({{LANG}})",
+  "appDescr": "48 questions (8 per level). Anti-guessing system. AI will review your result and provide a weighted level.",
+  "format": "Format",
+  "formatDesc": "Multiple choice + “I don’t know” + “Skip”",
+  "penalty": "Penalty for wrong answers",
+  "penaltyValue": "−0.33",
+  "aiAudit": "AI Audit",
+  "aiAuditDesc": "accuracy correction and confidence level",
+  "honestyNoteStrong": "Honesty matters:",
+  "honestyNote": "no translators or help. AI analyses response speed and answer patterns.",
+  "honestyCheck": "I confirm I’m completing this test honestly, without external help.",
+
+  "start": "Start Test",
+  "next": "Next →",
+  "prev": "← Back",
+  "skip": "Skip",
+  "idk": "I don’t know",
+  "finish": "Finish Test",
+
+  "progressQ": "Question",
+  "of": "of",
+  "questionLevel": "Question Level",
+
+  "timer": "Time",
+  "speed": "speed",
+  "secPerQ": "sec/question",
+
+  "resultTitle": "Your Result",
+  "weightedLevel": "Weighted Level",
+  "strictBand": "Strict by Thresholds",
+  "weightedIndex": "Index",
+  "belowA1": "Below A1",
+
+  "scoreWithPenalty": "Score (with anti-guessing)",
+  "answersBreakdown": "Correct / Wrong / I don’t know / Skipped",
+  "correct": "Correct",
+  "wrong": "Wrong",
+  "dontKnow": "I don’t know",
+  "skipped": "Skipped",
+  "time": "Time",
+  "timeAvg": "avg",
+  "reliability": "Response Reliability",
+
+  "profileByBands": "Profile by Levels",
+  "bandLevel": "Level",
+  "bandCorrect": "Correct",
+  "bandTotal": "Total",
+  "bandAccuracy": "Accuracy",
+
+  "recommendations": "Recommendations",
+
+  "aiPanelTitle": "AI Audit Result",
+  "aiAnalyzing": "AI is analyzing your answers…",
+  "aiLevel": "AI-estimated Level",
+  "aiConfidence": "AI Confidence",
+  "aiFlags": "Flags",
+  "aiCorrections": "AI Adjustments by Band",
+  "aiConnected": "AI connected. The audit will appear after finishing the test.",
+  "aiNotConnected": "AI audit not connected: insert your Web App URL (Apps Script) into AI_ENDPOINT.",
+  "aiFetchError": "AI audit: network or URL error.",
+  "aiJsonParseError": "AI audit: failed to parse JSON.",
+  "aiHttpError": "AI audit HTTP {{STATUS}}: {{MESSAGE}}",
+  "aiResponseError": "AI audit: {{MESSAGE}}",
+  "aiNoComment": "No comments.",
+
+  "review": "Review Answers",
+  "print": "Print / PDF",
+  "download": "Download Report (.json)",
+  "restart": "Retake Test",
+
+  "noAnswer": "— no answer —",
+  "badReliabilityHint": "Low reliability detected. Try retaking the test calmly and without external tools.",
+
+  "levelBadgeA1": "Beginner",
+  "levelBadgeA2": "Elementary",
+  "levelBadgeB1": "Intermediate",
+  "levelBadgeB2": "Upper-Intermediate",
+  "levelBadgeC1": "Advanced",
+  "levelBadgeC2": "Proficient",
+
+  "alertHonesty": "Please confirm the honesty checkbox before starting."
+}
