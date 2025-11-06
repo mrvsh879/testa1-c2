@@ -177,6 +177,16 @@
   function sanitize(x){return String(x).replace(/[&<>"]/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));}
   function updateUrl(ui,test){ const u=new URL(location.href); u.searchParams.set('ui',ui); u.searchParams.set('test',test); history.replaceState(null,"",u); }
 
+  /* ===== helpers: shuffle + normalize ===== */
+  function shuffleInPlace(a, rnd=Math.random){
+    for(let i=a.length-1;i>0;i--){
+      const j = Math.floor(rnd()*(i+1));
+      [a[i],a[j]] = [a[j],a[i]];
+    }
+    return a;
+  }
+  const norm = s => String(s||'').replace(/[.\s/–—-]+/g,' ').trim().toLowerCase();
+
   /* ====== Загрузка i18n & вопросов ====== */
   async function initI18n(){
     try { I18N = await loadJSON(`./i18n/${UI_LANG}.json`); } catch { I18N = await loadJSON(`./i18n/ru.json`); }
@@ -211,6 +221,42 @@
     localStorage.setItem('test_lang', TEST_LANG);
   }
 
+  /* === Рандомизация вариантов и вопросов (с «Не знаю» последним) === */
+  function applyRandomizationToOptions() {
+    const IDK_TEXT = (t('idk') || 'Не знаю');
+
+    QUESTIONS.forEach(q => {
+      // найти индекс "не знаю"
+      let idkIdx = (typeof q.idkIdx === 'number') ? q.idkIdx : -1;
+      if (idkIdx < 0) {
+        const last = q.options.length - 1;
+        if (norm(q.options[last]) === norm(IDK_TEXT)) idkIdx = last;
+      }
+      const hasIdk = idkIdx >= 0 && idkIdx < q.options.length;
+
+      const entries = q.options.map((txt, idx) => ({ txt, orig: idx }));
+      const idkEntry = hasIdk ? entries.splice(idkIdx, 1)[0] : null;
+
+      shuffleInPlace(entries);               // перемешать остальные
+      const newEntries = hasIdk ? [...entries, idkEntry] : entries;
+
+      // карта старый -> новый
+      const mapOldToNew = {};
+      newEntries.forEach((e, newIdx) => { mapOldToNew[e.orig] = newIdx; });
+
+      // пересчитать индексы правильных ответов
+      if (typeof q.answerIdx === 'number') q.answerIdx = mapOldToNew[q.answerIdx];
+      if (Array.isArray(q.correct)) q.correct = q.correct.map(old => mapOldToNew[old]);
+      if (hasIdk) q.idkIdx = mapOldToNew[idkIdx];
+
+      q.options = newEntries.map(e => e.txt);
+    });
+  }
+  function randomizeQuestionsOrder(){
+    orderArr = QUESTIONS.map((_,i)=>i);
+    shuffleInPlace(orderArr);
+  }
+
   /* ====== UI выбор языка ====== */
   qs('#uiSelect').value=UI_LANG; qs('#testSelect').value=TEST_LANG;
   qs('#uiSelect').addEventListener('change',e=>{ updateUrl(e.target.value, TEST_LANG); location.reload(); });
@@ -222,7 +268,7 @@
   const intro=qs('#screen-intro'), test=qs('#screen-test'), result=qs('#screen-result');
   const questionHost=qs('#questionHost'), progressBar=qs('#progressBar'), progressBadge=qs('#progressBadge'), lvlTag=qs('#lvlTag');
   const prevBtn=qs('#prevBtn'), nextBtn=qs('#nextBtn'), finishBtn=qs('#finishBtn'), startBtn=qs('#startBtn'), honestyCb=qs('#honesty');
-  const timerBadge=qs('#timerBadge'), speedBadge=qs('#speedBadge');
+  const timerBadge=qs('#timerBadge'), speedBadge=qs('#speedBadge']);
   const bandBody=qs('#bandBody'), headline=qs('#headline'), summaryBox=qs('#summaryBox');
   const reviewBtn=qs('#reviewBtn'), printBtn=qs('#printBtn'), downloadBtn=qs('#downloadBtn'), restartBtn=qs('#restartBtn');
   let tickTimer=null;
@@ -298,11 +344,11 @@
     let penalized=0, correct=0, wrong=0, idk=0, skipped=0;
     const details=[];
     const IDK_TEXT = (t('idk')||'Не знаю');
-    const norm = s => String(s||'').replace(/[.\s/–—-]+/g,' ').trim().toLowerCase();
+
     const isIdk=(q,idx)=>{
       if(idx==null) return false;
-      if(typeof q.idkIdx==='number') return idx===q.idkIdx;
-      const isLast = idx === (q.options.length-1);
+      if(typeof q.idkIdx==='number') return idx===q.idkIdx;           // после рандома idkIdx уже корректный
+      const isLast = idx === (q.options.length-1);                     // фолбэк на случай редких банков без idkIdx
       return isLast && norm(q.options[idx])===norm(IDK_TEXT);
     };
 
@@ -326,7 +372,7 @@
       bandRates[b]={ok,total:tot,rate: tot? ok/tot : 0};
     });
 
-    // Взвешенный индекс (по количеству вопросов в диапазоне)
+    // Взвешенный индекс
     const bandToIdx={A1:1,A2:2,B1:3,B2:4,C1:5,C2:6};
     let num=0, den=0;
     for(const b of Object.keys(bandRates)){
@@ -472,8 +518,15 @@
 
   /* ====== Boot ====== */
   (async function boot(){
-    await initI18n(); await initQuestions();
-    orderArr = QUESTIONS.map((_,i)=>i); total=orderArr.length;
+    await initI18n(); 
+    await initQuestions();
+
+    // рандомизация
+    applyRandomizationToOptions();   // варианты в каждом вопросе (IDK — последним)
+    randomizeQuestionsOrder();       // порядок вопросов
+
+    total = QUESTIONS.length;
+
     document.title = t('appTitle',{LANG:TEST_LANG.toUpperCase()}) || `CEFR Test (${TEST_LANG.toUpperCase()})`;
     qs('#progressBadge').textContent=`${t('progressQ')||'Вопрос'} 1 / ${total}`;
   })();
