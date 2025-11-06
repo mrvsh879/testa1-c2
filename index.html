@@ -4,48 +4,33 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>CEFR тест A1–C2 — мульти-язычный с AI-аудитом</title>
-<meta name="description" content="Профессиональный CEFR тест A1–C2: 48 вопросов, антиугадывание, надёжность, AI-аудит результата и взвешенный индекс. Мульти-язычный UI и банк вопросов." />
+<meta name="color-scheme" content="dark" />
 <style>
   :root{--bg:#0f1221;--card:#171a2e;--muted:#8b91b2;--text:#e9ecf7;--accent:#6ea8fe}
-  *{box-sizing:border-box}
-  body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(180deg,#0d1020 0%,#0f1221 60%,#0b0f1a 100%);color:var(--text)}
-  .wrap{max-width:960px;margin:0 auto;padding:24px}
-  .card{background:var(--card);border:1px solid #202547;box-shadow:0 10px 30px rgba(0,0,0,.35);border-radius:16px;padding:20px}
-  h1{margin:0 0 12px;font-size:24px}
-  .muted{color:var(--muted)}
-  .row{display:flex;gap:16px;flex-wrap:wrap}
-  .col{flex:1 1 300px}
-  .btn{appearance:none;border:1px solid #27305b;background:#1c2242;color:var(--text);padding:12px 16px;border-radius:12px;font-weight:600;cursor:pointer;transition:.15s}
-  .btn:hover{transform:translateY(-1px);background:#212a54}
-  .btn.primary{background:linear-gradient(180deg,#6ea8fe,#4c7ef5);border-color:#345bd6;color:#051028}
-  .btn.ghost{background:transparent;border-color:#2a335f}
-  .btn.ok{background:#0f3a26;border-color:#1f7a50}
-  .bar{height:10px;background:#10142b;border:1px solid #2a2e56;border-radius:999px;overflow:hidden}
-  .bar>div{height:100%;background:linear-gradient(90deg,#4c7ef5,#6ea8fe)}
-  .grid{display:grid;gap:14px}
-  .kpi{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#11142a;border:1px solid #23264a;border-radius:12px}
+  *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(180deg,#0d1020 0%,#0f1221 60%,#0b0f1a 100%);color:var(--text)}
+  .wrap{max-width:980px;margin:0 auto;padding:24px}
+  .card{background:#141834;border:1px solid #252a53;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.35);padding:20px}
+  .grid{display:grid;gap:12px}
+  .row{display:flex;gap:12px;flex-wrap:wrap}
+  .col{flex:1 1 280px}
+  .btn{appearance:none;border:1px solid #2a3166;background:#111739;color:var(--text);padding:11px 14px;border-radius:12px;font-weight:600;cursor:pointer}
+  .btn:hover{background:#161e45}
+  .btn.primary{background:linear-gradient(180deg,#6ea8fe,#4d7ff5);border-color:#345bd6;color:#071126}
+  .btn.ghost{background:transparent}
+  .btn.ok{background:#0f3a26;border-color:#1b6b4a}
+  .badge{display:inline-block;padding:4px 10px;border:1px solid #2a3166;border-radius:999px;color:#aeb7e8;background:#0e1230}
+  .kpi{display:flex;gap:8px;align-items:center;padding:10px 12px;background:#0e1230;border:1px solid #232952;border-radius:12px}
   .kpi .v{font-weight:700}
-  .q{padding:16px;border:1px solid #242953;border-radius:12px;background:#121634}
-  .q h3{margin:0 0 10px;font-size:16px}
-  .opt{display:block;border:1px solid #2a2f61;border-radius:10px;padding:10px;background:#111539}
+  .bar{height:10px;background:#0e1230;border:1px solid #232952;border-radius:999px;overflow:hidden}
+  .bar>div{height:100%;background:linear-gradient(90deg,#4d7ff5,#6ea8fe)}
+  .q{padding:14px;border:1px solid #232952;border-radius:12px;background:#101538}
+  .q h3{margin:0 0 8px;font-size:16px}
+  .opt{display:block;border:1px solid #2a3166;border-radius:10px;padding:10px;background:#0f1435}
   .opt+.opt{margin-top:8px}
-  .level-tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;border:1px solid #2a2e56;color:#aeb7e8}
-  .footer{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;margin-top:16px}
-  .note{padding:10px 12px;background:#0e122b;border:1px dashed #2b3166;border-radius:12px}
-  .hidden{display:none}
-  .badge{padding:2px 8px;border-radius:999px;border:1px solid #2b3166;background:#0e122b;color:#aeb7e8}
-  .result{padding:16px;border:1px solid #2a2e56;border-radius:12px;background:#0f1431}
-  .table{width:100%;border-collapse:collapse}
-  .table th,.table td{border-bottom:1px solid #23264c;padding:8px;text-align:left}
-  .hr{height:1px;background:#252a53;margin:16px 0}
-  .small{font-size:12px}
-  .chip{display:inline-block;padding:4px 8px;border-radius:999px;border:1px solid #2b3166;margin-right:6px;margin-bottom:6px}
-  .ai{background:#0b152b;border-color:#20325d}
-  .spinner{width:16px;height:16px;border:2px solid #2a3f7a;border-top-color:#6ea8fe;border-radius:50%;display:inline-block;animation:spin .9s linear infinite}
-  select{appearance:none;background:#0e122b;border:1px solid #2a2e56;color:#e9ecf7;border-radius:10px;padding:10px 12px}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  @media (max-width:520px){.footer{flex-direction:column}}
-  @media print{.wrap{padding:0}.card{box-shadow:none;border:0;border-radius:0}}
+  .muted{color:var(--muted)} .small{font-size:12px}
+  .hr{height:1px;background:#232952;margin:14px 0}
+  .hidden{display:none} select{appearance:none;background:#0f1435;border:1px solid #2a3166;color:#e9ecf7;border-radius:10px;padding:10px 12px}
+  @media (max-width:560px){.footer{flex-direction:column;align-items:stretch}}
 </style>
 </head>
 <body>
@@ -55,21 +40,22 @@
     <h1 id="introTitle">Тест уровня языка A1–C2</h1>
     <p class="muted" id="introDescr">48 вопросов (по 8 на уровень). Антиугадывание. Итог проверит AI. Плюс «взвешенный индекс» — мягкая оценка.</p>
 
-    <div class="row" style="align-items:flex-start">
+    <div class="row">
       <div class="col grid">
-        <div class="kpi"><span id="fmtLabel">Формат:</span><span class="v" id="fmtValue">Multiple choice + «Не знаю»</span></div>
-        <div class="kpi"><span id="penLabel">Штраф за ошибку:</span><span class="v" id="penValue">−0.33</span></div>
-        <div class="kpi"><span>AI-аудит:</span><span class="v" id="aiDescr">коррекция уровня и доверия</span></div>
+        <div class="kpi"><span id="fmtLabel">Формат:</span> <span class="v" id="fmtValue">Multiple choice + «Не знаю»</span></div>
+        <div class="kpi"><span id="penLabel">Штраф за ошибку:</span> <span class="v" id="penValue">−0.33</span></div>
+        <div class="kpi"><span>AI-аудит:</span> <span class="v" id="aiDescr">коррекция уровня и доверия</span></div>
       </div>
-      <div class="col note">
-        <strong id="honestyStrong">Честность важна:</strong>
-        <span id="honestyNote">без переводчиков, не подсматривайте. AI анализирует скорость/паттерны.</span>
+      <div class="col kpi">
+        <div>
+          <strong id="honestyStrong">Честность важна:</strong><br/>
+          <span class="muted" id="honestyNote">без переводчиков, не подсматривайте. AI анализирует скорость/паттерны.</span>
+        </div>
       </div>
     </div>
 
     <div class="hr"></div>
 
-    <!-- выборы языков -->
     <div class="row">
       <div class="col">
         <label class="small muted" id="uiLangLabel">Язык интерфейса</label><br/>
@@ -99,26 +85,26 @@
       <input type="checkbox" id="honesty" /> <span id="honestyCheck">Подтверждаю честное прохождение без посторонней помощи.</span>
     </label>
 
-    <div class="footer">
-      <div class="bar" style="flex:1"><div style="width:0%"></div></div>
+    <div class="row footer" style="align-items:center;gap:12px;margin-top:12px">
+      <div class="bar" style="flex:1;max-width:400px"><div style="width:0%"></div></div>
       <button class="btn primary" id="startBtn">Начать тест</button>
     </div>
-    <p id="aiWarn" class="small muted" style="margin-top:10px;"></p>
+    <p id="aiWarn" class="small muted" style="margin-top:8px"></p>
   </div>
 
   <!-- TEST -->
   <div class="card hidden" id="screen-test">
-    <div class="footer">
-      <div><span class="badge" id="progressBadge">Вопрос 1 / 48</span></div>
-      <div class="bar" style="flex:1;max-width:400px"><div id="progressBar" style="width:0%"></div></div>
-      <div>
-        <span class="badge" id="timerBadge">00:00</span>
-        <span class="badge" id="speedBadge">скорость: —</span>
-      </div>
+    <div class="row" style="align-items:center">
+      <span class="badge" id="progressBadge">Вопрос 1 / 48</span>
+      <div class="bar" style="flex:1;max-width:420px"><div id="progressBar" style="width:0%"></div></div>
+      <span class="badge" id="timerBadge">00:00</span>
+      <span class="badge" id="speedBadge">скорость: —</span>
     </div>
+
     <div id="questionHost" class="grid" style="margin-top:12px"></div>
-    <div class="footer">
-      <div class="muted small"><span id="qLevelLabel">Уровень вопроса:</span> <span id="lvlTag" class="level-tag">—</span></div>
+
+    <div class="row footer" style="justify-content:space-between">
+      <div class="muted small"><span id="qLevelLabel">Уровень вопроса:</span> <span id="lvlTag" class="badge">—</span></div>
       <div>
         <button class="btn ghost" id="prevBtn">← Назад</button>
         <button class="btn" id="nextBtn">Далее →</button>
@@ -129,30 +115,42 @@
 
   <!-- RESULT -->
   <div class="card hidden" id="screen-result">
-    <h2 style="margin:0 0 6px" id="resultTitle">Ваш результат</h2>
+    <h2 id="resultTitle" style="margin:0 0 6px">Ваш результат</h2>
     <div id="headline"></div>
     <div class="hr"></div>
+
     <div class="grid">
-      <div class="result" id="summaryBox"></div>
-      <div class="result">
+      <div class="card" style="padding:12px" id="summaryBox"></div>
+
+      <div class="card" style="padding:12px">
         <h3 style="margin:0 0 8px" id="profileTitle">Профиль по уровням</h3>
-        <table class="table" id="bandTable">
-          <thead><tr><th id="thLevel">Уровень</th><th id="thCorrect">Верно</th><th id="thTotal">Всего</th><th id="thAcc">Точность</th></tr></thead>
-          <tbody></tbody>
+        <table class="table" style="width:100%;border-collapse:collapse">
+          <thead>
+            <tr>
+              <th id="thLevel" style="text-align:left;border-bottom:1px solid #232952;padding:6px">Уровень</th>
+              <th id="thCorrect" style="text-align:left;border-bottom:1px solid #232952;padding:6px">Верно</th>
+              <th id="thTotal" style="text-align:left;border-bottom:1px solid #232952;padding:6px">Всего</th>
+              <th id="thAcc" style="text-align:left;border-bottom:1px solid #232952;padding:6px">Точность</th>
+            </tr>
+          </thead>
+          <tbody id="bandBody"></tbody>
         </table>
       </div>
-      <div class="result">
+
+      <div class="card" style="padding:12px">
         <h3 style="margin:0 0 8px" id="recoTitle">Рекомендации</h3>
         <div id="reco"></div>
       </div>
-      <div class="result ai" id="aiPanel">
+
+      <div class="card" style="padding:12px;background:#0c1330;border-color:#22305a">
         <h3 style="margin:0 0 8px" id="aiPanelTitle">AI-аудит результата</h3>
-        <div id="aiStatus" class="small muted"><span class="spinner"></span> <span id="aiAnalyzing">Анализ результата AI…</span></div>
+        <div id="aiStatus" class="small muted"><span class="badge">…</span> <span id="aiAnalyzing">Анализ результата AI…</span></div>
         <div id="aiBox" class="hidden"></div>
       </div>
     </div>
+
     <div class="hr"></div>
-    <div class="footer">
+    <div class="row footer">
       <button class="btn" id="reviewBtn">Просмотреть ответы</button>
       <button class="btn" id="printBtn">Печать / PDF</button>
       <button class="btn primary" id="downloadBtn">Скачать отчёт (.json)</button>
@@ -162,238 +160,164 @@
 </div>
 
 <script>
-  /* ========= 1) Константы ========= */
+  /* ====== Конфиг ====== */
   const AI_ENDPOINT = "https://script.google.com/macros/s/AKfycbxIoMsVU88aW_rGXGR_ScjovjPrMGCMloEqEUFV8guay_emA-aW5nLFujz5-4xSpjPjKA/exec";
-
   const TEST_LOCALE = { de:"de-DE", pl:"pl-PL", cs:"cs-CZ", it:"it-IT", fr:"fr-FR", ro:"ro-RO", sk:"sk-SK" };
 
-  function getParam(name, def) {
-    const p = new URLSearchParams(location.search).get(name);
-    return p || def;
-  }
+  function getParam(name, def){ const p=new URLSearchParams(location.search).get(name); return p || def; }
   const UI_LANG   = getParam('ui',  localStorage.getItem('ui_lang')   || 'ru');
   const TEST_LANG = getParam('test',localStorage.getItem('test_lang') || 'de');
 
-  let I18N = {};
-  let QUESTIONS = [];
-
-  /* ========= 2) Утилиты ========= */
+  let I18N = {}, QUESTIONS = [];
   const qs = s => document.querySelector(s);
-  const clamp = (n,a,b)=>Math.max(a,Math.min(b,n));
-  const fmtSec = s => { const m=Math.floor(s/60), r=s%60; return `${String(m).padStart(2,'0')}:${String(r).padStart(2,'0')}`; };
+  const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+  const fmtSec = s => {const m=Math.floor(s/60),r=s%60;return `${String(m).padStart(2,'0')}:${String(r).padStart(2,'0')}`;};
+  async function loadJSON(url){ const r=await fetch(url,{cache:'no-store'}); if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }
+  function t(key,vars={}){ let s=I18N[key]||key; for(const [k,v] of Object.entries(vars)) s=s.replaceAll(`{{${k}}}`,String(v)); return s; }
+  function sanitize(x){return String(x).replace(/[&<>"]/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));}
+  function updateUrl(ui,test){ const u=new URL(location.href); u.searchParams.set('ui',ui); u.searchParams.set('test',test); history.replaceState(null,"",u); }
 
-  async function loadJSON(url){
-    const r = await fetch(url, {cache:'no-store'});
-    if(!r.ok) throw new Error('HTTP '+r.status+' '+url);
-    return r.json();
-  }
-
-  function t(key, vars={}) {
-    let s = I18N[key] || key;
-    for (const [k,v] of Object.entries(vars)) s = s.replaceAll(`{{${k}}}`, String(v));
-    return s;
-  }
-
-  function sanitize(txt){ return String(txt).replace(/[&<>"]/g, s=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[s])); }
-
-  function setSelectValue(id, val){ const el=qs(id); if(el) el.value=val; }
-
-  function updateUrl(ui,test){
-    const url = new URL(location.href);
-    url.searchParams.set('ui', ui);
-    url.searchParams.set('test', test);
-    history.replaceState(null,"",url.toString());
-  }
-
-  /* ========= 3) Загрузка i18n + вопросов ========= */
-  async function initI18n() {
-    try { I18N = await loadJSON(`./i18n/${UI_LANG}.json`); }
-    catch { I18N = await loadJSON(`./i18n/ru.json`); }
+  /* ====== Загрузка i18n & вопросов ====== */
+  async function initI18n(){
+    try { I18N = await loadJSON(`./i18n/${UI_LANG}.json`); } catch { I18N = await loadJSON(`./i18n/ru.json`); }
     localStorage.setItem('ui_lang', UI_LANG);
 
-    qs('#introTitle').textContent = t('appTitle', { LANG: TEST_LANG.toUpperCase() });
-    qs('#introDescr').textContent = t('appDescr');
-    qs('#fmtLabel').textContent = t('format')+':';
-    qs('#fmtValue').textContent = t('formatDesc');
-    qs('#penLabel').textContent = t('penalty')+':';
-    qs('#penValue').textContent = t('penaltyValue');
-    qs('#aiDescr').textContent = t('aiAuditDesc');
-    qs('#honestyStrong').textContent = t('honestyNoteStrong');
-    qs('#honestyNote').textContent = t('honestyNote');
-    qs('#honestyCheck').textContent = t('honestyCheck');
+    qs('#introTitle').textContent = t('appTitle', { LANG: TEST_LANG.toUpperCase() }) || `Тест уровня языка A1–C2 (${TEST_LANG.toUpperCase()})`;
+    qs('#introDescr').textContent = t('appDescr') || qs('#introDescr').textContent;
+    qs('#fmtLabel').textContent = (t('format')||'Формат')+':'; qs('#fmtValue').textContent = t('formatDesc')||'Multiple choice + «Не знаю»';
+    qs('#penLabel').textContent = (t('penalty')||'Штраф')+':';     qs('#penValue').textContent = t('penaltyValue')||'−0.33';
+    qs('#aiDescr').textContent = t('aiAuditDesc')||'коррекция уровня и доверия';
+    qs('#honestyStrong').textContent = t('honestyNoteStrong')||'Честность важна:';
+    qs('#honestyNote').textContent = t('honestyNote')||'без переводчиков, не подсматривайте. AI анализирует скорость/паттерны.';
+    qs('#honestyCheck').textContent = t('honestyCheck')||'Подтверждаю честное прохождение без посторонней помощи.';
+    qs('#startBtn').textContent=t('start')||'Начать тест'; qs('#prevBtn').textContent=t('prev')||'Назад';
+    qs('#nextBtn').textContent=t('next')||'Далее'; qs('#finishBtn').textContent=t('finish')||'Завершить тест';
+    qs('#qLevelLabel').textContent=t('questionLevel')||'Уровень вопроса:'; qs('#resultTitle').textContent=t('resultTitle')||'Ваш результат';
+    qs('#profileTitle').textContent=t('profileByBands')||'Профиль по уровням'; qs('#recoTitle').textContent=t('recommendations')||'Рекомендации';
+    qs('#aiPanelTitle').textContent=t('aiPanelTitle')||'AI-аудит результата'; qs('#aiAnalyzing').textContent=t('aiAnalyzing')||'Анализ результата AI…';
+    qs('#thLevel').textContent=t('bandLevel')||'Уровень'; qs('#thCorrect').textContent=t('bandCorrect')||'Верно';
+    qs('#thTotal').textContent=t('bandTotal')||'Всего'; qs('#thAcc').textContent=t('bandAccuracy')||'Точность';
+    qs('#reviewBtn').textContent=t('review')||'Просмотреть ответы'; qs('#printBtn').textContent=t('print')||'Печать / PDF';
+    qs('#downloadBtn').textContent=t('download')||'Скачать отчёт (.json)'; qs('#restartBtn').textContent=t('restart')||'Пройти заново';
 
-    qs('#startBtn').textContent = t('start');
-    qs('#prevBtn').textContent = t('prev');
-    qs('#nextBtn').textContent = t('next');
-    qs('#finishBtn').textContent = t('finish');
-
-    qs('#qLevelLabel').textContent = t('questionLevel');
-    qs('#resultTitle').textContent = t('resultTitle');
-    qs('#profileTitle').textContent = t('profileByBands');
-    qs('#recoTitle').textContent = t('recommendations');
-    qs('#aiPanelTitle').textContent = t('aiPanelTitle');
-    qs('#aiAnalyzing').textContent = t('aiAnalyzing');
-
-    qs('#thLevel').textContent = t('bandLevel');
-    qs('#thCorrect').textContent = t('bandCorrect');
-    qs('#thTotal').textContent = t('bandTotal');
-    qs('#thAcc').textContent = t('bandAccuracy');
-
-    qs('#reviewBtn').textContent = t('review');
-    qs('#printBtn').textContent  = t('print');
-    qs('#downloadBtn').textContent = t('download');
-    qs('#restartBtn').textContent = t('restart');
-
-    const warn = qs('#aiWarn');
-    warn.textContent = (AI_ENDPOINT && AI_ENDPOINT.includes('/exec')) ? t('aiConnected') : t('aiNotConnected');
+    qs('#aiWarn').textContent = (AI_ENDPOINT && AI_ENDPOINT.includes('/exec')) ? (t('aiConnected')||'AI подключён: после завершения теста будет AI-аудит.') : (t('aiNotConnected')||'AI-аудит пока не подключён.');
   }
 
-  async function initQuestions() {
+  async function initQuestions(){
     const data = await loadJSON(`./questions/${TEST_LANG}.json`);
-    if (Array.isArray(data.questions)) {
-      QUESTIONS = data.questions;
-    } else if (data.levels) {
-      const levels = ["A1","A2","B1","B2","C1","C2"]; const all=[];
-      for (const L of levels) (data.levels[L]||[]).forEach(q=>{ q.level=L; all.push(q); });
-      QUESTIONS = all;
-    } else {
-      throw new Error('Формат файла вопросов не распознан');
-    }
+    if (Array.isArray(data.questions)) QUESTIONS = data.questions;
+    else if (data.levels){ const order=["A1","A2","B1","B2","C1","C2"]; const all=[]; for(const L of order) (data.levels[L]||[]).forEach(q=>{q.level=L; all.push(q)}); QUESTIONS=all; }
+    else throw new Error('Неизвестный формат банка вопросов');
     localStorage.setItem('test_lang', TEST_LANG);
-    document.title = t('appTitle', { LANG: TEST_LANG.toUpperCase() });
   }
 
-  /* ========= 4) Селекторы языков ========= */
-  setSelectValue('#uiSelect', UI_LANG);
-  setSelectValue('#testSelect', TEST_LANG);
-  qs('#uiSelect').addEventListener('change', e=>{ updateUrl(e.target.value, TEST_LANG); location.reload(); });
-  qs('#testSelect').addEventListener('change', e=>{ updateUrl(UI_LANG, e.target.value); location.reload(); });
+  /* ====== UI выбор языка ====== */
+  qs('#uiSelect').value=UI_LANG; qs('#testSelect').value=TEST_LANG;
+  qs('#uiSelect').addEventListener('change',e=>{ updateUrl(e.target.value, TEST_LANG); location.reload(); });
+  qs('#testSelect').addEventListener('change',e=>{ updateUrl(UI_LANG, e.target.value); location.reload(); });
 
-  /* ========= 5) Состояние ========= */
+  /* ====== Состояние ====== */
   const state = { startedAt:null, current:0, answers:{}, times:{}, qStartAt:null, honesty:false };
-  let total=0, order=[];
-
-  const intro = qs('#screen-intro'), test = qs('#screen-test'), result = qs('#screen-result');
-  const startBtn = qs('#startBtn'), honestyCb = qs('#honesty');
-  const questionHost = qs('#questionHost'), progressBar = qs('#progressBar'), progressBadge = qs('#progressBadge'), lvlTag = qs('#lvlTag');
-  const prevBtn = qs('#prevBtn'), nextBtn = qs('#nextBtn'), finishBtn = qs('#finishBtn');
-  const timerBadge = qs('#timerBadge'), speedBadge = qs('#speedBadge');
-  const headline = qs('#headline'), summaryBox = qs('#summaryBox'), bandTableBody = qs('#bandTable tbody'), reco = qs('#reco');
-  const reviewBtn = qs('#reviewBtn'), printBtn = qs('#printBtn'), downloadBtn = qs('#downloadBtn'), restartBtn = qs('#restartBtn');
-  const aiStatus = qs('#aiStatus'), aiBox = qs('#aiBox');
-
+  let total=0, orderArr=[];
+  const intro=qs('#screen-intro'), test=qs('#screen-test'), result=qs('#screen-result');
+  const questionHost=qs('#questionHost'), progressBar=qs('#progressBar'), progressBadge=qs('#progressBadge'), lvlTag=qs('#lvlTag');
+  const prevBtn=qs('#prevBtn'), nextBtn=qs('#nextBtn'), finishBtn=qs('#finishBtn'), startBtn=qs('#startBtn'), honestyCb=qs('#honesty');
+  const timerBadge=qs('#timerBadge'), speedBadge=qs('#speedBadge');
+  const bandBody=qs('#bandBody'), headline=qs('#headline'), summaryBox=qs('#summaryBox');
+  const reviewBtn=qs('#reviewBtn'), printBtn=qs('#printBtn'), downloadBtn=qs('#downloadBtn'), restartBtn=qs('#restartBtn');
   let tickTimer=null;
 
-  /* ========= 6) Навигация + таймер ========= */
-  startBtn.addEventListener('click',()=>{
+  /* ====== Навигация, таймер ====== */
+  startBtn.addEventListener('click', ()=>{
     if(!honestyCb.checked){ alert(t('alertHonesty')||'Подтвердите честное прохождение'); return; }
-    state.honesty = true; state.startedAt=Date.now(); state.qStartAt=Date.now();
-    intro.classList.add('hidden'); test.classList.remove('hidden'); renderCurrent(); tick();
+    state.honesty=true; state.startedAt=Date.now(); state.qStartAt=Date.now();
+    intro.classList.add('hidden'); test.classList.remove('hidden'); renderCurrent(); startTick();
   });
 
-  function tick(){
+  function startTick(){
     clearInterval(tickTimer);
-    tickTimer = setInterval(()=>{
-      const elapsed = Math.floor((Date.now()-state.startedAt)/1000);
-      timerBadge.textContent = fmtSec(elapsed);
-      const answered = Object.keys(state.answers).length || 1;
-      const avg = elapsed / answered;
-      speedBadge.textContent = `${t('speed')||'скорость'}: ${avg.toFixed(1)} ${t('secPerQ')||'c/вопр'}`;
+    tickTimer=setInterval(()=>{
+      const elapsed=Math.floor((Date.now()-state.startedAt)/1000);
+      timerBadge.textContent=fmtSec(elapsed);
+      const answered=Object.keys(state.answers).length||1; const avg=(elapsed/answered).toFixed(1);
+      speedBadge.textContent=`${t('speed')||'скорость'}: ${avg} ${t('secPerQ')||'c/вопр'}`;
     },1000);
   }
 
-  prevBtn.addEventListener('click', ()=>{ captureCurrentSelection(); move(-1); });
-  nextBtn.addEventListener('click', ()=>{ captureCurrentSelection(); move(1); });
-  finishBtn.addEventListener('click', ()=>{ captureCurrentSelection(); finish(); });
-
   function saveTimeForCurrent(){
-    const q = QUESTIONS[order[state.current]];
-    const spent = Math.floor((Date.now()-state.qStartAt)/1000);
-    state.times[q.id] = (state.times[q.id] || 0) + spent;
-    state.qStartAt = Date.now();
-  }
-  function move(delta){
-    saveTimeForCurrent();
-    state.current = clamp(state.current+delta,0,total-1);
-    renderCurrent();
+    const q=QUESTIONS[orderArr[state.current]]; if(!q) return;
+    const spent=Math.floor((Date.now()-state.qStartAt)/1000); state.times[q.id]=(state.times[q.id]||0)+spent; state.qStartAt=Date.now();
   }
 
   function captureCurrentSelection(){
-    const q = QUESTIONS[order[state.current]];
-    if (!q) return;
-    const sel = document.querySelector('input[name="opt"]:checked');
-    if (sel) state.answers[q.id] = +sel.value;
+    const q=QUESTIONS[orderArr[state.current]]; if(!q) return;
+    const sel=document.querySelector('input[name="opt"]:checked'); if(sel) state.answers[q.id]=+sel.value;
   }
+  document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden') captureCurrentSelection(); });
+
+  prevBtn.addEventListener('click',()=>{ captureCurrentSelection(); move(-1); });
+  nextBtn.addEventListener('click',()=>{ captureCurrentSelection(); move(1); });
+  finishBtn.addEventListener('click',()=>{ captureCurrentSelection(); finish(); });
+
+  function move(d){ saveTimeForCurrent(); state.current=clamp(state.current+d,0,total-1); renderCurrent(); }
 
   function renderCurrent(){
-    const idx = state.current;
-    const q = QUESTIONS[order[idx]];
-    progressBadge.textContent = `${t('progressQ')||'Вопрос'} ${idx+1} / ${total}`;
-    progressBar.style.width = `${((idx+1)/total*100).toFixed(1)}%`;
-    lvlTag.textContent = q.level;
-
-    questionHost.innerHTML = '';
-    const box = document.createElement('div'); box.className='q';
-    box.innerHTML = `<h3>${sanitize(q.q)}</h3>`;
+    const idx=state.current, q=QUESTIONS[orderArr[idx]];
+    progressBadge.textContent=`${t('progressQ')||'Вопрос'} ${idx+1} / ${total}`;
+    progressBar.style.width=`${((idx+1)/total*100).toFixed(1)}%`;
+    lvlTag.textContent=q.level;
+    questionHost.innerHTML='';
+    const box=document.createElement('div'); box.className='q'; box.innerHTML=`<h3>${sanitize(q.q)}</h3>`;
 
     q.options.forEach((opt,optIdx)=>{
-      const lab = document.createElement('label'); lab.className='opt';
-      const input = document.createElement('input'); input.type='radio'; input.name='opt'; input.value=optIdx;
-      input.style.marginRight='8px';
-      if(state.answers[q.id]===optIdx) input.checked = true;
-      input.addEventListener('change', ()=>{
-        state.answers[q.id] = optIdx;
-        // авто-переход вперёд
-        if (state.current < total-1) move(1);
-        else { nextBtn.classList.add('hidden'); finishBtn.classList.remove('hidden'); }
-      });
-      lab.appendChild(input);
-      lab.appendChild(document.createTextNode(opt));
-      box.appendChild(lab);
+      const lab=document.createElement('label'); lab.className='opt';
+      const radio=document.createElement('input'); radio.type='radio'; radio.name='opt'; radio.value=optIdx; radio.style.marginRight='8px';
+      if(state.answers[q.id]===optIdx) radio.checked=true;
+      lab.appendChild(radio); lab.appendChild(document.createTextNode(opt)); box.appendChild(lab);
     });
     questionHost.appendChild(box);
 
-    prevBtn.disabled = idx===0;
-    nextBtn.classList.toggle('hidden', idx===total-1);
-    finishBtn.classList.toggle('hidden', idx!==total-1);
+    const isLast = (idx===total-1);
+    nextBtn.classList.toggle('hidden', isLast);
+    finishBtn.classList.toggle('hidden', !isLast);
+
+    const toggleFinish=()=>{ const chosen=document.querySelector('input[name="opt"]:checked'); finishBtn.disabled=isLast && !chosen; };
+    toggleFinish();
+
+    questionHost.querySelectorAll('input[name="opt"]').forEach(r=>{
+      r.addEventListener('change', ()=>{
+        state.answers[q.id]=+r.value; toggleFinish();
+        if(!isLast) move(1);
+      });
+    });
   }
 
-  /* ========= 7) Подсчёт (верно/ошибка/idk/пропуск) ========= */
+  /* ====== Подсчёт ====== */
   function scoreReport(){
-    const perBand = {A1:[],A2:[],B1:[],B2:[],C1:[],C2:[]};
+    const perBand={A1:[],A2:[],B1:[],B2:[],C1:[],C2:[]};
     let penalized=0, correct=0, wrong=0, idk=0, skipped=0;
     const details=[];
-
-    const IDK_TEXT = (t('idk') || 'Не знаю');
+    const IDK_TEXT = (t('idk')||'Не знаю');
     const norm = s => String(s||'').replace(/[.\s/–—-]+/g,' ').trim().toLowerCase();
-
-    const isIdk = (q, idx) => {
-      if (idx == null) return false;
-      // 1) Явный индекс из вопроса (предпочтительно)
-      if (typeof q.idkIdx === 'number') return idx === q.idkIdx;
-      // 2) Иначе — только если последний и текст совпадает
-      const isLast = idx === (q.options.length - 1);
-      return isLast && norm(q.options[idx]) === norm(IDK_TEXT);
+    const isIdk=(q,idx)=>{
+      if(idx==null) return false;
+      if(typeof q.idkIdx==='number') return idx===q.idkIdx;
+      const isLast = idx === (q.options.length-1);
+      return isLast && norm(q.options[idx])===norm(IDK_TEXT);
     };
 
     QUESTIONS.forEach(q=>{
-      const ans = state.answers[q.id];
+      const ans=state.answers[q.id];
       let delta=0;
 
-      if(ans === undefined){
-        skipped++;
-      } else if (isIdk(q, ans)) {
-        idk++;
-      } else if (ans === q.answerIdx || (Array.isArray(q.correct) && q.correct.includes(ans))) {
-        delta = (typeof q.weight==='number' ? q.weight : 1); correct++;
-      } else {
-        const pen = (typeof q.penalty==='number' ? q.penalty : -0.33);
-        delta = pen; wrong++;
-      }
+      if(ans===undefined){ skipped++; }
+      else if(isIdk(q,ans)){ idk++; }
+      else if(ans===q.answerIdx || (Array.isArray(q.correct)&&q.correct.includes(ans))){ delta=(typeof q.weight==='number'?q.weight:1); correct++; }
+      else { const pen=(typeof q.penalty==='number'?q.penalty:-0.33); delta=pen; wrong++; }
 
-      penalized += delta;
-      perBand[q.level].push({id:q.id,correct:(ans===q.answerIdx) || (Array.isArray(q.correct)&&q.correct.includes(ans)),delta});
-      details.push({id:q.id,level:q.level,chosen:ans??null,correctIdx:q.answerIdx,delta,timeSec:state.times[q.id]||0});
+      penalized+=delta;
+      perBand[q.level].push({id:q.id,correct:(ans===q.answerIdx)||(Array.isArray(q.correct)&&q.correct.includes(ans)),delta});
+      details.push({id:q.id,level:q.level,chosen:ans??null,correctIdx:q.answerIdx,timeSec:state.times[q.id]||0,delta});
     });
 
     const bandRates={};
@@ -402,74 +326,54 @@
       bandRates[b]={ok,total:tot,rate: tot? ok/tot : 0};
     });
 
-    // Взвешенный индекс
-    const bandToIdx = { A1:1, A2:2, B1:3, B2:4, C1:5, C2:6 };
+    // Взвешенный индекс (по количеству вопросов в диапазоне)
+    const bandToIdx={A1:1,A2:2,B1:3,B2:4,C1:5,C2:6};
     let num=0, den=0;
-    for(const b of Object.keys(bandRates)){ const r=bandRates[b].rate; num+=(bandToIdx[b]||0)*r; den+=r; }
-    const weightedIdx = den ? num/den : 0;
+    for(const b of Object.keys(bandRates)){
+      const {rate,total}=bandRates[b];
+      num += (bandToIdx[b]||0) * rate * total;
+      den += total;
+    }
+    const weightedIdx = den ? (num/den) : 0;
     const idxToBand = x => (x<1.5?'A1':x<2.5?'A2':x<3.5?'B1':x<4.5?'B2':x<5.5?'C1':'C2');
-    const weightedLevel = den ? idxToBand(weightedIdx) : "A0";
+    const weightedLevel = den ? idxToBand(weightedIdx) : 'A0';
 
     // Жёсткие пороги
-    const passReq = {A1:.70,A2:.65,B1:.60,B2:.60,C1:.55,C2:.50};
-    let achieved="A0";
-    for (const b of ["A1","A2","B1","B2","C1","C2"]) {
-      if ((bandRates[b]?.rate || 0) >= passReq[b]) achieved = b;
-    }
+    const passReq={A1:.70,A2:.65,B1:.60,B2:.60,C1:.55,C2:.50};
+    let achieved="A0"; for(const b of ["A1","A2","B1","B2","C1","C2"]) if((bandRates[b]?.rate||0)>=passReq[b]) achieved=b;
 
-    // Время/надёжность
-    const totalSec = Math.floor((Date.now()-state.startedAt)/1000);
-    const answeredCount = Object.keys(state.answers).length || 1;
-    const avgSec = totalSec / answeredCount;
-    let reliability = 1.0;
-    if (avgSec < 4.0) reliability -= 0.25;
-    if (!state.honesty) reliability -= 0.15;
-    if (idk===0 && skipped===0 && wrong>correct) reliability -= 0.1;
-    reliability = clamp(reliability,0,1);
-
-    // Нормализация суммы (для красивого 0..1)
-    const maxRaw = QUESTIONS.length;
-    const normScore = clamp((penalized + (QUESTIONS.length*0.33)) / (maxRaw + QUESTIONS.length*0.33), 0, 1);
+    // Тайминг / надёжность
+    const totalSec=Math.floor((Date.now()-state.startedAt)/1000);
+    const answered=Object.keys(state.answers).length||1;
+    const avgSec=totalSec/answered;
+    let reliability=1.0; if(avgSec<4.0) reliability-=0.25; if(!state.honesty) reliability-=0.15; if(idk===0&&skipped===0&&wrong>correct) reliability-=0.1; reliability=clamp(reliability,0,1);
 
     return {
       achieved, weightedLevel, weightedIdx:+weightedIdx.toFixed(2),
       bandRates, penalized:+penalized.toFixed(2),
-      correct, wrong, idk, skipped, total: QUESTIONS.length,
+      correct, wrong, idk, skipped, total:QUESTIONS.length,
       totalSec, avgSec:+avgSec.toFixed(1), reliability:+reliability.toFixed(2),
-      norm:+normScore.toFixed(2), details
+      details
     };
   }
 
-  /* ========= 8) Завершение, отчёт ========= */
+  /* ====== Завершение & отчёт ====== */
   async function finish(){
-    saveTimeForCurrent();
+    saveTimeForCurrent(); captureCurrentSelection();
     test.classList.add('hidden'); clearInterval(tickTimer);
-    const report = scoreReport();
-    showResult(report);
-    aiAudit(report).catch(()=>{ aiStatus.textContent = t('aiFetchError')||'AI: ошибка запроса'; });
+    const report=scoreReport(); showResult(report); aiAudit(report);
   }
 
   function showResult(r){
     result.classList.remove('hidden');
-    const levelBadges={
-      "A1": t('levelBadgeA1')||"Начальный",
-      "A2": t('levelBadgeA2')||"Элементарный",
-      "B1": t('levelBadgeB1')||"Средний",
-      "B2": t('levelBadgeB2')||"Уверенный средний",
-      "C1": t('levelBadgeC1')||"Продвинутый",
-      "C2": t('levelBadgeC2')||"Владение",
-      "A0": t('belowA1') || "Ниже A1"
-    };
+    const levelBadge = {A1:"Начальный",A2:"Элементарный",B1:"Средний",B2:"Уверенный средний",C1:"Продвинутый",C2:"Владение",A0:"Ниже A1"};
 
     headline.innerHTML = `
-      <div class="kpi">
-        <span>${t('weightedLevel')||'Взвешенный уровень'}:</span>
+      <div class="kpi"><span>${t('weightedLevel')||'Взвешенный уровень'}:</span>
         <span class="v" style="margin-left:6px">${r.weightedLevel}</span>
-        <span class="chip">${levelBadges[r.weightedLevel]||""}</span>
+        <span class="badge">${levelBadge[r.weightedLevel]||''}</span>
       </div>
-      <div class="small muted" style="margin-top:6px">
-        ${(t('strictBand')||'Жёсткий по порогам')}: <strong>${r.achieved}</strong> · ${t('weightedIndex')||'Индекс'} = ${r.weightedIdx ?? "-"}
-      </div>
+      <div class="small muted" style="margin-top:6px">${(t('strictBand')||'Жёсткий по порогам')}: <strong>${r.achieved}</strong> · ${(t('weightedIndex')||'Индекс')} = ${r.weightedIdx}</div>
     `;
 
     summaryBox.innerHTML = `
@@ -480,119 +384,98 @@
         <div class="kpi"><span>${t('reliability')||'Надёжность прохождения'}:</span> <span class="v">${(r.reliability*100).toFixed(0)}%</span></div>
       </div>`;
 
-    bandTableBody.innerHTML='';
+    bandBody.innerHTML='';
     Object.entries(r.bandRates).forEach(([lvl,dat])=>{
       const tr=document.createElement('tr');
-      tr.innerHTML = `<td>${lvl}</td><td>${dat.ok}</td><td>${dat.total}</td><td>${Math.round(dat.rate*100)}%</td>`;
-      bandTableBody.appendChild(tr);
+      tr.innerHTML=`<td style="padding:6px;border-bottom:1px solid #232952">${lvl}</td>
+                    <td style="padding:6px;border-bottom:1px solid #232952">${dat.ok}</td>
+                    <td style="padding:6px;border-bottom:1px solid #232952">${dat.total}</td>
+                    <td style="padding:6px;border-bottom:1px solid #232952">${Math.round(dat.rate*100)}%</td>`;
+      bandBody.appendChild(tr);
     });
 
+    // простые рекомендации
     const recoLines=[];
-    const need = (lvl)=>r.bandRates[lvl] && r.bandRates[lvl].rate < ({A1:.70,A2:.65,B1:.60,B2:.60,C1:.55,C2:.50}[lvl]);
-    if(r.weightedLevel==="A0"||r.weightedLevel==="A1"){recoLines.push("База: алфавит/фонетика, простые фразы, 1000–1500 слов, ежедневное аудирование уровня A1.");}
-    if(r.weightedLevel==="A2"){recoLines.push("Глагольные формы, частотный словарь ~2500, базовые тексты и диалоги A2.");}
-    if(r.weightedLevel==="B1"){recoLines.push("Связки речи, придаточные, активная устная практика, короткие эссе.");}
-    if(r.weightedLevel==="B2"){recoLines.push("Академическая лексика, сложные конструкции, резюмирование статей.");}
-    if(r.weightedLevel==="C1"){recoLines.push("Стиль/регистр, точность формулировок, эссе 250–300 слов, устные презентации.");}
-    if(r.weightedLevel==="C2"){recoLines.push("Поддержание уровня: дебаты, редактирование текстов, узкопрофильные материалы.");}
-    Object.keys(r.bandRates).forEach(b=>{ if(need(b)) recoLines.push(`Уровень ${b}: дотянуть до целевого порога.`); });
-    if(r.reliability<0.7){recoLines.push(t('badReliabilityHint')||"Обнаружены признаки низкой надёжности. Рекомендуется пересдать в спокойных условиях.");}
-    qs('#reco').innerHTML = `<ul>${recoLines.map(x=>`<li>${sanitize(x)}</li>`).join('')}</ul>`;
+    if(r.weightedLevel==="A0"||r.weightedLevel==="A1") recoLines.push("База: алфавит/фонетика, простые фразы, 1000–1500 слов, ежедневное аудирование уровня A1.");
+    if(r.weightedLevel==="A2") recoLines.push("Глагольные формы, частотный словарь ~2500, базовые тексты и диалоги A2.");
+    if(r.weightedLevel==="B1") recoLines.push("Связки речи, придаточные, активная устная практика, короткие эссе.");
+    if(r.weightedLevel==="B2") recoLines.push("Академическая лексика, сложные конструкции, резюмирование статей.");
+    if(r.weightedLevel==="C1") recoLines.push("Стиль/регистр, точность формулировок, эссе 250–300 слов, презентации.");
+    if(r.weightedLevel==="C2") recoLines.push("Поддержание уровня: дебаты, редактирование текстов, профильные материалы.");
+    const need=(lvl)=>r.bandRates[lvl] && r.bandRates[lvl].rate < ({A1:.70,A2:.65,B1:.60,B2:.60,C1:.55,C2:.50}[lvl]);
+    ["A1","A2","B1","B2","C1","C2"].forEach(b=>{ if(need(b)) recoLines.push(`Уровень ${b}: дотянуть до целевого порога.`); });
+    if(r.reliability<0.7) recoLines.push("Виявлено ознаки низької надійності. Рекомендується перепройти у спокійних умовах.");
+    qs('#reco').innerHTML=`<ul>${recoLines.map(x=>`<li>${sanitize(x)}</li>`).join('')}</ul>`;
 
-    reviewBtn.onclick = ()=>reviewAnswers();
-    printBtn.onclick = ()=>window.print();
-    downloadBtn.onclick = ()=>{
-      const blob = new Blob([JSON.stringify({generatedAt:new Date().toISOString(),report:r,ui:UI_LANG,test:TEST_LANG},null,2)],{type:'application/json'});
-      const url = URL.createObjectURL(blob);
-      const a=document.createElement('a'); a.href=url; a.download=`cefr_report_${TEST_LANG}.json`; a.click();
-      setTimeout(()=>URL.revokeObjectURL(url),1000);
+    reviewBtn.onclick=()=>reviewAnswers();
+    printBtn.onclick=()=>window.print();
+    downloadBtn.onclick=()=>{
+      const blob=new Blob([JSON.stringify({generatedAt:new Date().toISOString(),report:r,ui:UI_LANG,test:TEST_LANG},null,2)],{type:'application/json'});
+      const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`cefr_report_${TEST_LANG}.json`; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000);
     };
-    restartBtn.onclick = ()=>window.location.reload();
+    restartBtn.onclick=()=>location.reload();
   }
 
   function reviewAnswers(){
-    result.scrollIntoView({behavior:'smooth'});
-    const container = document.createElement('div'); container.className='grid';
+    const sec=document.createElement('div'); sec.className='card'; sec.style.marginTop='12px'; sec.style.padding='12px';
+    const h=document.createElement('h3'); h.textContent=t('review')||'Просмотреть ответы'; sec.appendChild(h);
+    const cont=document.createElement('div'); cont.className='grid';
     QUESTIONS.forEach(q=>{
-      const chosen = state.answers[q.id];
-      const wrap = document.createElement('div'); wrap.className='q';
-      wrap.innerHTML = `<div class="level-tag">${q.level}</div><h3 style="margin-top:8px">${sanitize(q.q)}</h3>`;
+      const chosen=state.answers[q.id];
+      const wrap=document.createElement('div'); wrap.className='q';
+      wrap.innerHTML=`<div class="badge">${q.level}</div> <h3 style="margin-top:8px">${sanitize(q.q)}</h3>`;
       q.options.forEach((opt,i)=>{
-        const lab=document.createElement('div'); lab.className='opt';
-        if(i===q.answerIdx || (Array.isArray(q.correct)&&q.correct.includes(i))) lab.style.borderColor = '#1f8c5a';
-        if(chosen!==undefined && i===chosen && !(i===q.answerIdx || (Array.isArray(q.correct)&&q.correct.includes(i)))) lab.style.borderColor = '#9e2e2e';
-        lab.textContent = opt;
-        wrap.appendChild(lab);
+        const row=document.createElement('div'); row.className='opt';
+        const isRight = (i===q.answerIdx) || (Array.isArray(q.correct)&&q.correct.includes(i));
+        if(isRight) row.style.borderColor='#1f8c5a';
+        if(chosen!==undefined && i===chosen && !isRight) row.style.borderColor='#a13c3c';
+        row.textContent=opt; wrap.appendChild(row);
       });
-      container.appendChild(wrap);
+      cont.appendChild(wrap);
     });
-    if(!document.getElementById('reviewBlock')){
-      const sec=document.createElement('div'); sec.id='reviewBlock'; sec.className='result'; sec.style.marginTop='12px';
-      const h=document.createElement('h3'); h.textContent=t('review')||'Просмотреть ответы';
-      sec.appendChild(h); sec.appendChild(container); result.appendChild(sec);
-    }
+    sec.appendChild(cont);
+    if(!document.getElementById('reviewBlock')){ sec.id='reviewBlock'; qs('#screen-result').appendChild(sec); }
+    sec.scrollIntoView({behavior:'smooth'});
   }
 
-  /* ========= 9) AI-аудит ========= */
+  /* ====== AI-аудит ====== */
   async function aiAudit(rawReport){
-    if(!AI_ENDPOINT || !AI_ENDPOINT.includes('/exec')) { qs('#aiStatus').textContent = t('aiNotConnected')||'AI не подключён'; return; }
-    const meta = {
-      version: "1.0",
-      honesty: state.honesty,
-      startedAt: new Date(state.startedAt).toISOString(),
-      finishedAt: new Date().toISOString(),
-      locale: TEST_LOCALE[TEST_LANG] || "en-US",
-      testSpec: { totalQuestions: QUESTIONS.length, penaltyWrong: -0.33, hasIDK: true },
-      langs: { ui: UI_LANG, test: TEST_LANG }
+    if(!AI_ENDPOINT || !AI_ENDPOINT.includes('/exec')) { qs('#aiStatus').textContent=t('aiNotConnected')||'AI не подключён'; return; }
+    const meta={
+      version:"1.0", honesty:state.honesty,
+      startedAt:new Date(state.startedAt).toISOString(), finishedAt:new Date().toISOString(),
+      locale: TEST_LOCALE[TEST_LANG]||"en-US",
+      testSpec:{ totalQuestions:QUESTIONS.length, penaltyWrong:-0.33, hasIDK:true },
+      langs:{ ui:UI_LANG, test:TEST_LANG }
     };
+    let res; try{
+      res=await fetch(AI_ENDPOINT,{method:"POST",headers:{"Content-Type":"text/plain"},
+        body:JSON.stringify({intent:"final-assess",data:{rawReport,meta}})});
+    }catch(e){ qs('#aiStatus').textContent=t('aiFetchError')||'AI: ошибка запроса'; return; }
 
-    let res;
-    try {
-      res = await fetch(AI_ENDPOINT, {
-        method: "POST",
-        headers: { "Content-Type":"text/plain" },
-        body: JSON.stringify({ intent: "final-assess", data: { rawReport, meta } })
-      });
-    } catch(e){
-      qs('#aiStatus').textContent = t('aiFetchError')||'AI: ошибка запроса';
-      return;
-    }
+    let payload; try{ payload=await res.json(); }catch(e){ qs('#aiStatus').textContent=t('aiJsonParseError')||'AI: некорректный JSON'; return; }
+    const out=payload?.output ?? payload;
+    if(!res.ok || !out || out.error){ qs('#aiStatus').textContent=(t('aiHttpError')||'AI-аудит ошибка: ')+(out?.error||res.status); return; }
 
-    let payload;
-    try { payload = await res.json(); }
-    catch(e){ qs('#aiStatus').textContent = t('aiJsonParseError')||'AI: некорректный JSON'; return; }
-
-    const out = payload?.output ?? payload;
-    if(!res.ok || !out || out.error){
-      const msg = out?.error || JSON.stringify(out).slice(0,200);
-      qs('#aiStatus').textContent = (t('aiHttpError')||'AI-аудит ошибка: ') + msg;
-      return;
-    }
-
-    qs('#aiStatus').classList.add('hidden');
-    const aiBox = qs('#aiBox'); aiBox.classList.remove('hidden');
-    const adj = out.adjustments || {};
-    aiBox.innerHTML = `
+    qs('#aiStatus').classList.add('hidden'); const box=qs('#aiBox'); box.classList.remove('hidden');
+    const adj=out.adjustments||{};
+    box.innerHTML=`
       <div class="grid">
-        <div class="kpi"><span>${t('aiLevel')||'AI-уровень'}:</span> <span class="v">${sanitize(out.adjustedLevel || "—")}</span></div>
+        <div class="kpi"><span>${t('aiLevel')||'AI-уровень'}:</span> <span class="v">${sanitize(out.adjustedLevel||'—')}</span></div>
         <div class="kpi"><span>${t('aiConfidence')||'Доверие AI'}:</span> <span class="v">${Math.round((out.confidence||0)*100)}%</span></div>
-        <div class="kpi"><span>${t('aiFlags')||'Флаги'}:</span> <span class="v">${(out.flags||[]).map(sanitize).join(', ') || '—'}</span></div>
+        <div class="kpi"><span>${t('aiFlags')||'Флаги'}:</span> <span class="v">${(out.flags||[]).map(sanitize).join(', ')||'—'}</span></div>
       </div>
       <div class="hr"></div>
-      <div class="small muted">
-        ${(t('aiCorrections')||'Коррекции по диапазонам (AI)')}: ${["A1","A2","B1","B2","C1","C2"].map(k=>`${k}: ${adj[k] ?? 0}`).join(' · ')}
-      </div>
-      <div style="margin-top:8px">${sanitize(out.rationale || (t('aiNoComment')||'Без комментариев.'))}</div>
-    `;
+      <div class="small muted">${(t('aiCorrections')||'Коррекции по диапазонам (AI)')}: ${["A1","A2","B1","B2","C1","C2"].map(k=>`${k}: ${adj[k]??0}`).join(' · ')}</div>
+      <div style="margin-top:8px">${sanitize(out.rationale || (t('aiNoComment')||'Без комментариев.'))}</div>`;
   }
 
-  /* ========= 10) Boot ========= */
+  /* ====== Boot ====== */
   (async function boot(){
-    await initI18n();
-    await initQuestions();
-    order = QUESTIONS.map((_,i)=>i);
-    total = order.length;
-    qs('#progressBadge').textContent = `${t('progressQ')||'Вопрос'} 1 / ${total}`;
+    await initI18n(); await initQuestions();
+    orderArr = QUESTIONS.map((_,i)=>i); total=orderArr.length;
+    document.title = t('appTitle',{LANG:TEST_LANG.toUpperCase()}) || `CEFR Test (${TEST_LANG.toUpperCase()})`;
+    qs('#progressBadge').textContent=`${t('progressQ')||'Вопрос'} 1 / ${total}`;
   })();
 </script>
 </body>
