@@ -185,7 +185,7 @@
 
   // Глобальные данные
   let I18N = {};       // словарь интерфейса
-  let QUESTIONS = [];  // банк вопросов (48; каждый с опцией "Не знаю" на 5-й позиции)
+  let QUESTIONS = [];  // банк вопросов
 
   /* ========= 2) Утилиты ========= */
   function qs(s){return document.querySelector(s)}
@@ -225,8 +225,7 @@
     try {
       I18N = await loadJSON(`./i18n/${UI_LANG}.json`);
     } catch (e) {
-      // Fallback RU
-      I18N = await loadJSON(`./i18n/ru.json`);
+      I18N = await loadJSON(`./i18n/ru.json`); // fallback RU
     }
     localStorage.setItem('ui_lang', UI_LANG);
 
@@ -273,15 +272,12 @@
 
   async function initQuestions() {
     const data = await loadJSON(`./questions/${TEST_LANG}.json`);
-    // допускаем формат {questions:[...]} или {levels:{A1:[],...}}
     if (Array.isArray(data.questions)) {
       QUESTIONS = data.questions;
     } else if (data.levels) {
       const levels = ["A1","A2","B1","B2","C1","C2"];
       const all = [];
-      for (const L of levels) {
-        (data.levels[L] || []).forEach(q => { q.level=L; all.push(q); });
-      }
+      for (const L of levels) (data.levels[L] || []).forEach(q => { q.level=L; all.push(q); });
       QUESTIONS = all;
     } else {
       throw new Error('Формат файла вопросов не распознан');
@@ -368,11 +364,13 @@
       const lab = document.createElement('label'); lab.className='opt';
       const input = document.createElement('input'); input.type='radio'; input.name='opt'; input.value=optIdx;
       if(state.answers[q.id]===optIdx) input.checked = true;
-      lab.appendChild(input); lab.insertAdjacentText('beforeend', opt);
-      lab.addEventListener('click',()=>{
+      // важный фикс: реагируем на выбор по change, а не по клику в label
+      input.addEventListener('change', () => {
         state.answers[q.id] = optIdx;
-        setTimeout(()=>{ if(state.current<total-1){move(1)}else{nextBtn.classList.add('hidden');finishBtn.classList.remove('hidden')} },80);
+        if (state.current < total-1) move(1);
+        else { nextBtn.classList.add('hidden'); finishBtn.classList.remove('hidden'); }
       });
+      lab.appendChild(input); lab.insertAdjacentText('beforeend', opt);
       box.appendChild(lab);
     });
     questionHost.appendChild(box);
@@ -383,18 +381,41 @@
   }
 
   /* ========= 7) Подсчёт (антиугадывание) ========= */
-  // ВНИМАНИЕ: пятая опция (индекс 4) — «Не знаю». Мы не штрафуем за неё.
+  // Разводим "Не знаю" и действительно "Пропущено"
   function scoreReport(){
     const perBand = {A1:[],A2:[],B1:[],B2:[],C1:[],C2:[]};
-    let penalized=0, correct=0, wrong=0, skip=0;
+    let penalized=0, correct=0, wrong=0, idk=0, skipped=0;
     const details=[];
+
+    const IDK_TEXT = (t('idk') || 'Не знаю').trim().toLowerCase();
+    const looksLikeIdk = (s) => {
+      if (!s) return false;
+      const v = String(s).trim().toLowerCase();
+      return v === IDK_TEXT ||
+             v === 'idk' ||
+             v.includes('не знаю') ||
+             v.includes("i don't know") ||
+             v.includes('je ne sais pas') ||
+             v.includes('non lo so') ||
+             v.includes('nevím') ||
+             v.includes('nu știu') ||
+             v.includes('nie wiem');
+    };
 
     QUESTIONS.forEach(q=>{
       const ans = state.answers[q.id];
       let delta=0;
-      if(ans===undefined || ans===4){ delta=0; skip++; }
-      else if(ans===q.answerIdx){ delta=1; correct++; }
-      else { delta=-0.33; wrong++; }
+
+      if(ans === undefined){
+        skipped++;
+      } else if (looksLikeIdk(q.options?.[ans])) {
+        idk++;
+      } else if(ans === q.answerIdx){
+        delta = 1; correct++;
+      } else {
+        delta = -0.33; wrong++;
+      }
+
       penalized += delta;
       perBand[q.level].push({id:q.id,correct:ans===q.answerIdx,delta});
       details.push({id:q.id,level:q.level,chosen:ans??null,correctIdx:q.answerIdx,delta,timeSec:state.times[q.id]||0});
@@ -427,19 +448,18 @@
 
     // «Жёсткий» по порогам
     const passReq = {A1:.70,A2:.65,B1:.60,B2:.60,C1:.55,C2:.50};
-    const orderBands=["A1","A2","B1","B2","C1","C2"];
     let achieved="A0";
-    for (const b of orderBands) {
+    for (const b of ["A1","A2","B1","B2","C1","C2"]) {
       if ((bandRates[b]?.rate || 0) >= passReq[b]) achieved = b;
     }
 
     const totalSec = Math.floor((Date.now()-state.startedAt)/1000);
-    const avgSec = totalSec / Math.max(1,Object.keys(state.answers).length||1);
-    const fast = avgSec < 4.0;
+    const answeredCount = Object.keys(state.answers).length;
+    const avgSec = totalSec / Math.max(1, answeredCount);
     let reliability = 1.0;
-    if(fast) reliability -= 0.25;
-    if(!state.honesty) reliability -= 0.15;
-    if(skip===0 && wrong>correct) reliability -= 0.1;
+    if (avgSec < 4.0) reliability -= 0.25;
+    if (!state.honesty) reliability -= 0.15;
+    if (idk===0 && skipped===0 && wrong>correct) reliability -= 0.1;
     reliability = clamp(reliability,0,1);
 
     const maxRaw = QUESTIONS.length;
@@ -448,7 +468,7 @@
     return {
       achieved, weightedLevel, weightedIdx:+weightedIdx.toFixed(2),
       bandRates, penalized:+penalized.toFixed(2),
-      correct, wrong, skip, total: QUESTIONS.length,
+      correct, wrong, idk, skipped, total: QUESTIONS.length,
       totalSec, avgSec:+avgSec.toFixed(1), reliability:+reliability.toFixed(2),
       norm:+norm.toFixed(2), details
     };
@@ -489,7 +509,7 @@
     summaryBox.innerHTML = `
       <div class="grid">
         <div class="kpi"><span>${t('scoreWithPenalty') || 'Баллы с антиугадыванием'}:</span> <span class="v">${r.penalized} / ${r.total}</span></div>
-        <div class="kpi"><span>${t('answersBreakdown') || 'Правильно / Ошибки / «Не знаю»'}:</span> <span class="v">${r.correct} / ${r.wrong} / ${r.skip}</span></div>
+        <div class="kpi"><span>${t('answersBreakdown') || 'Правильно / Ошибки / «Не знаю» / Пропущено'}:</span> <span class="v">${r.correct} / ${r.wrong} / ${r.idk} / ${r.skipped}</span></div>
         <div class="kpi"><span>${t('time') || 'Время'}:</span> <span class="v">${fmtSec(r.totalSec)} (${t('timeAvg')||'ср.'} ${r.avgSec}s/${t('progressQ')||'вопр'})</span></div>
         <div class="kpi"><span>${t('reliability') || 'Надёжность прохождения'}:</span> <span class="v">${(r.reliability*100).toFixed(0)}%</span></div>
       </div>`;
@@ -621,14 +641,12 @@
     await initI18n();
     await initQuestions();
 
-    // порядок вопросов (можно перемешать, если захочешь)
+    // порядок вопросов
     order = QUESTIONS.map((_,i)=>i);
     total = order.length;
 
     // прогресс-лейбл на старте
     qs('#progressBadge').textContent = `${t('progressQ') || 'Вопрос'} 1 / ${total}`;
-
-    // Готово к старту
   })();
 </script>
 </body>
