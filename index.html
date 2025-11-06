@@ -6,12 +6,12 @@
 <title>CEFR тест A1–C2 — мульти-язычный с AI-аудитом</title>
 <meta name="description" content="Профессиональный CEFR тест A1–C2: 48 вопросов, антиугадывание, надёжность, AI-аудит результата и взвешенный индекс. Мульти-язычный UI и банк вопросов." />
 <style>
-  :root{--bg:#0f1221;--card:#171a2e;--muted:#8b91b2;--text:#e9ecf7;--accent:#6ea8fe;--ok:#2ecc71;--bad:#ff6b6b;--warn:#ffd166}
+  :root{--bg:#0f1221;--card:#171a2e;--muted:#8b91b2;--text:#e9ecf7;--accent:#6ea8fe}
   *{box-sizing:border-box}
   body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(180deg,#0d1020 0%,#0f1221 60%,#0b0f1a 100%);color:var(--text)}
   .wrap{max-width:960px;margin:0 auto;padding:24px}
   .card{background:var(--card);border:1px solid #202547;box-shadow:0 10px 30px rgba(0,0,0,.35);border-radius:16px;padding:20px}
-  h1{margin:0 0 12px;font-size:24px;letter-spacing:.2px}
+  h1{margin:0 0 12px;font-size:24px}
   .muted{color:var(--muted)}
   .row{display:flex;gap:16px;flex-wrap:wrap}
   .col{flex:1 1 300px}
@@ -27,11 +27,8 @@
   .kpi .v{font-weight:700}
   .q{padding:16px;border:1px solid #242953;border-radius:12px;background:#121634}
   .q h3{margin:0 0 10px;font-size:16px}
-  .opt{display:block;border:1px solid #2a2f61;border-radius:10px;padding:10px;cursor:pointer;background:#111539}
-  .opt input{margin-right:8px}
+  .opt{display:block;border:1px solid #2a2f61;border-radius:10px;padding:10px;background:#111539}
   .opt+.opt{margin-top:8px}
-  .opt.correct{border-color:#1f8c5a;background:#0e2e22}
-  .opt.wrong{border-color:#9e2e2e;background:#2a1111}
   .level-tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;border:1px solid #2a2e56;color:#aeb7e8}
   .footer{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;margin-top:16px}
   .note{padding:10px 12px;background:#0e122b;border:1px dashed #2b3166;border-radius:12px}
@@ -166,16 +163,10 @@
 
 <script>
   /* ========= 1) Константы ========= */
-  // Твой AI-прокси (Apps Script)
   const AI_ENDPOINT = "https://script.google.com/macros/s/AKfycbxIoMsVU88aW_rGXGR_ScjovjPrMGCMloEqEUFV8guay_emA-aW5nLFujz5-4xSpjPjKA/exec";
 
-  // Маппинг локали для AI по языку теста
-  const TEST_LOCALE = {
-    de: "de-DE", pl: "pl-PL", cs: "cs-CZ", it: "it-IT",
-    fr: "fr-FR", ro: "ro-RO", sk: "sk-SK"
-  };
+  const TEST_LOCALE = { de:"de-DE", pl:"pl-PL", cs:"cs-CZ", it:"it-IT", fr:"fr-FR", ro:"ro-RO", sk:"sk-SK" };
 
-  // Текущие параметры (из URL или localStorage)
   function getParam(name, def) {
     const p = new URLSearchParams(location.search).get(name);
     return p || def;
@@ -183,14 +174,13 @@
   const UI_LANG   = getParam('ui',  localStorage.getItem('ui_lang')   || 'ru');
   const TEST_LANG = getParam('test',localStorage.getItem('test_lang') || 'de');
 
-  // Глобальные данные
-  let I18N = {};       // словарь интерфейса
-  let QUESTIONS = [];  // банк вопросов
+  let I18N = {};
+  let QUESTIONS = [];
 
   /* ========= 2) Утилиты ========= */
-  function qs(s){return document.querySelector(s)}
-  function clamp(n,a,b){return Math.max(a,Math.min(b,n))}
-  function fmtSec(s){const m=Math.floor(s/60),r=s%60;return `${String(m).padStart(2,'0')}:${String(r).padStart(2,'0')}`}
+  const qs = s => document.querySelector(s);
+  const clamp = (n,a,b)=>Math.max(a,Math.min(b,n));
+  const fmtSec = s => { const m=Math.floor(s/60), r=s%60; return `${String(m).padStart(2,'0')}:${String(r).padStart(2,'0')}`; };
 
   async function loadJSON(url){
     const r = await fetch(url, {cache:'no-store'});
@@ -204,37 +194,28 @@
     return s;
   }
 
-  function sanitize(t){
-    return String(t).replace(/[&<>"]/g, s => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[s]));
-  }
+  function sanitize(txt){ return String(txt).replace(/[&<>"]/g, s=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[s])); }
 
-  function setSelectValue(id, val){
-    const el = qs(id);
-    if (el) el.value = val;
-  }
+  function setSelectValue(id, val){ const el=qs(id); if(el) el.value=val; }
 
-  function updateUrl(ui, test){
+  function updateUrl(ui,test){
     const url = new URL(location.href);
     url.searchParams.set('ui', ui);
     url.searchParams.set('test', test);
-    history.replaceState(null, "", url.toString());
+    history.replaceState(null,"",url.toString());
   }
 
   /* ========= 3) Загрузка i18n + вопросов ========= */
   async function initI18n() {
-    try {
-      I18N = await loadJSON(`./i18n/${UI_LANG}.json`);
-    } catch (e) {
-      I18N = await loadJSON(`./i18n/ru.json`); // fallback RU
-    }
+    try { I18N = await loadJSON(`./i18n/${UI_LANG}.json`); }
+    catch { I18N = await loadJSON(`./i18n/ru.json`); }
     localStorage.setItem('ui_lang', UI_LANG);
 
-    // Применить тексты на Intro и Result (ключевые)
     qs('#introTitle').textContent = t('appTitle', { LANG: TEST_LANG.toUpperCase() });
     qs('#introDescr').textContent = t('appDescr');
-    qs('#fmtLabel').textContent = t('format') + ':';
+    qs('#fmtLabel').textContent = t('format')+':';
     qs('#fmtValue').textContent = t('formatDesc');
-    qs('#penLabel').textContent = t('penalty') + ':';
+    qs('#penLabel').textContent = t('penalty')+':';
     qs('#penValue').textContent = t('penaltyValue');
     qs('#aiDescr').textContent = t('aiAuditDesc');
     qs('#honestyStrong').textContent = t('honestyNoteStrong');
@@ -263,11 +244,8 @@
     qs('#downloadBtn').textContent = t('download');
     qs('#restartBtn').textContent = t('restart');
 
-    // подпись про AI
     const warn = qs('#aiWarn');
-    warn.textContent = (AI_ENDPOINT && AI_ENDPOINT.includes('/exec'))
-      ? t('aiConnected')
-      : t('aiNotConnected');
+    warn.textContent = (AI_ENDPOINT && AI_ENDPOINT.includes('/exec')) ? t('aiConnected') : t('aiNotConnected');
   }
 
   async function initQuestions() {
@@ -275,9 +253,8 @@
     if (Array.isArray(data.questions)) {
       QUESTIONS = data.questions;
     } else if (data.levels) {
-      const levels = ["A1","A2","B1","B2","C1","C2"];
-      const all = [];
-      for (const L of levels) (data.levels[L] || []).forEach(q => { q.level=L; all.push(q); });
+      const levels = ["A1","A2","B1","B2","C1","C2"]; const all=[];
+      for (const L of levels) (data.levels[L]||[]).forEach(q=>{ q.level=L; all.push(q); });
       QUESTIONS = all;
     } else {
       throw new Error('Формат файла вопросов не распознан');
@@ -289,21 +266,12 @@
   /* ========= 4) Селекторы языков ========= */
   setSelectValue('#uiSelect', UI_LANG);
   setSelectValue('#testSelect', TEST_LANG);
+  qs('#uiSelect').addEventListener('change', e=>{ updateUrl(e.target.value, TEST_LANG); location.reload(); });
+  qs('#testSelect').addEventListener('change', e=>{ updateUrl(UI_LANG, e.target.value); location.reload(); });
 
-  qs('#uiSelect').addEventListener('change', (e)=>{
-    const newUi = e.target.value;
-    updateUrl(newUi, TEST_LANG);
-    location.reload();
-  });
-  qs('#testSelect').addEventListener('change', (e)=>{
-    const newTest = e.target.value;
-    updateUrl(UI_LANG, newTest);
-    location.reload();
-  });
-
-  /* ========= 5) Состояние теста ========= */
+  /* ========= 5) Состояние ========= */
   const state = { startedAt:null, current:0, answers:{}, times:{}, qStartAt:null, honesty:false };
-  let total = 0, order = [];
+  let total=0, order=[];
 
   const intro = qs('#screen-intro'), test = qs('#screen-test'), result = qs('#screen-result');
   const startBtn = qs('#startBtn'), honestyCb = qs('#honesty');
@@ -318,7 +286,7 @@
 
   /* ========= 6) Навигация + таймер ========= */
   startBtn.addEventListener('click',()=>{
-    if(!honestyCb.checked){ alert(t('alertHonesty')); return; }
+    if(!honestyCb.checked){ alert(t('alertHonesty')||'Подтвердите честное прохождение'); return; }
     state.honesty = true; state.startedAt=Date.now(); state.qStartAt=Date.now();
     intro.classList.add('hidden'); test.classList.remove('hidden'); renderCurrent(); tick();
   });
@@ -330,13 +298,13 @@
       timerBadge.textContent = fmtSec(elapsed);
       const answered = Object.keys(state.answers).length || 1;
       const avg = elapsed / answered;
-      speedBadge.textContent = `${t('speed') || 'скорость'}: ${avg.toFixed(1)} ${t('secPerQ') || 'c/вопр'}`;
+      speedBadge.textContent = `${t('speed')||'скорость'}: ${avg.toFixed(1)} ${t('secPerQ')||'c/вопр'}`;
     },1000);
   }
 
-  prevBtn.addEventListener('click',()=>move(-1));
-  nextBtn.addEventListener('click',()=>move(1));
-  finishBtn.addEventListener('click',()=>finish());
+  prevBtn.addEventListener('click', ()=>{ captureCurrentSelection(); move(-1); });
+  nextBtn.addEventListener('click', ()=>{ captureCurrentSelection(); move(1); });
+  finishBtn.addEventListener('click', ()=>{ captureCurrentSelection(); finish(); });
 
   function saveTimeForCurrent(){
     const q = QUESTIONS[order[state.current]];
@@ -350,27 +318,37 @@
     renderCurrent();
   }
 
+  function captureCurrentSelection(){
+    const q = QUESTIONS[order[state.current]];
+    if (!q) return;
+    const sel = document.querySelector('input[name="opt"]:checked');
+    if (sel) state.answers[q.id] = +sel.value;
+  }
+
   function renderCurrent(){
     const idx = state.current;
     const q = QUESTIONS[order[idx]];
-    progressBadge.textContent = `${t('progressQ') || 'Вопрос'} ${idx+1} / ${total}`;
+    progressBadge.textContent = `${t('progressQ')||'Вопрос'} ${idx+1} / ${total}`;
     progressBar.style.width = `${((idx+1)/total*100).toFixed(1)}%`;
     lvlTag.textContent = q.level;
 
     questionHost.innerHTML = '';
     const box = document.createElement('div'); box.className='q';
     box.innerHTML = `<h3>${sanitize(q.q)}</h3>`;
+
     q.options.forEach((opt,optIdx)=>{
       const lab = document.createElement('label'); lab.className='opt';
       const input = document.createElement('input'); input.type='radio'; input.name='opt'; input.value=optIdx;
+      input.style.marginRight='8px';
       if(state.answers[q.id]===optIdx) input.checked = true;
-      // важный фикс: реагируем на выбор по change, а не по клику в label
-      input.addEventListener('change', () => {
+      input.addEventListener('change', ()=>{
         state.answers[q.id] = optIdx;
+        // авто-переход вперёд
         if (state.current < total-1) move(1);
         else { nextBtn.classList.add('hidden'); finishBtn.classList.remove('hidden'); }
       });
-      lab.appendChild(input); lab.insertAdjacentText('beforeend', opt);
+      lab.appendChild(input);
+      lab.appendChild(document.createTextNode(opt));
       box.appendChild(lab);
     });
     questionHost.appendChild(box);
@@ -380,26 +358,22 @@
     finishBtn.classList.toggle('hidden', idx!==total-1);
   }
 
-  /* ========= 7) Подсчёт (антиугадывание) ========= */
-  // Разводим "Не знаю" и действительно "Пропущено"
+  /* ========= 7) Подсчёт (верно/ошибка/idk/пропуск) ========= */
   function scoreReport(){
     const perBand = {A1:[],A2:[],B1:[],B2:[],C1:[],C2:[]};
     let penalized=0, correct=0, wrong=0, idk=0, skipped=0;
     const details=[];
 
-    const IDK_TEXT = (t('idk') || 'Не знаю').trim().toLowerCase();
-    const looksLikeIdk = (s) => {
-      if (!s) return false;
-      const v = String(s).trim().toLowerCase();
-      return v === IDK_TEXT ||
-             v === 'idk' ||
-             v.includes('не знаю') ||
-             v.includes("i don't know") ||
-             v.includes('je ne sais pas') ||
-             v.includes('non lo so') ||
-             v.includes('nevím') ||
-             v.includes('nu știu') ||
-             v.includes('nie wiem');
+    const IDK_TEXT = (t('idk') || 'Не знаю');
+    const norm = s => String(s||'').replace(/[.\s/–—-]+/g,' ').trim().toLowerCase();
+
+    const isIdk = (q, idx) => {
+      if (idx == null) return false;
+      // 1) Явный индекс из вопроса (предпочтительно)
+      if (typeof q.idkIdx === 'number') return idx === q.idkIdx;
+      // 2) Иначе — только если последний и текст совпадает
+      const isLast = idx === (q.options.length - 1);
+      return isLast && norm(q.options[idx]) === norm(IDK_TEXT);
     };
 
     QUESTIONS.forEach(q=>{
@@ -408,16 +382,17 @@
 
       if(ans === undefined){
         skipped++;
-      } else if (looksLikeIdk(q.options?.[ans])) {
+      } else if (isIdk(q, ans)) {
         idk++;
-      } else if(ans === q.answerIdx){
-        delta = 1; correct++;
+      } else if (ans === q.answerIdx || (Array.isArray(q.correct) && q.correct.includes(ans))) {
+        delta = (typeof q.weight==='number' ? q.weight : 1); correct++;
       } else {
-        delta = -0.33; wrong++;
+        const pen = (typeof q.penalty==='number' ? q.penalty : -0.33);
+        delta = pen; wrong++;
       }
 
       penalized += delta;
-      perBand[q.level].push({id:q.id,correct:ans===q.answerIdx,delta});
+      perBand[q.level].push({id:q.id,correct:(ans===q.answerIdx) || (Array.isArray(q.correct)&&q.correct.includes(ans)),delta});
       details.push({id:q.id,level:q.level,chosen:ans??null,correctIdx:q.answerIdx,delta,timeSec:state.times[q.id]||0});
     });
 
@@ -427,91 +402,82 @@
       bandRates[b]={ok,total:tot,rate: tot? ok/tot : 0};
     });
 
-    // Взвешенный индекс по уровням
+    // Взвешенный индекс
     const bandToIdx = { A1:1, A2:2, B1:3, B2:4, C1:5, C2:6 };
     let num=0, den=0;
-    for(const b of Object.keys(bandRates)){
-      const r = bandRates[b].rate;
-      num += (bandToIdx[b]||0) * r;
-      den += r;
-    }
+    for(const b of Object.keys(bandRates)){ const r=bandRates[b].rate; num+=(bandToIdx[b]||0)*r; den+=r; }
     const weightedIdx = den ? num/den : 0;
-    function idxToBand(x){
-      if (x < 1.5) return "A1";
-      if (x < 2.5) return "A2";
-      if (x < 3.5) return "B1";
-      if (x < 4.5) return "B2";
-      if (x < 5.5) return "C1";
-      return "C2";
-    }
+    const idxToBand = x => (x<1.5?'A1':x<2.5?'A2':x<3.5?'B1':x<4.5?'B2':x<5.5?'C1':'C2');
     const weightedLevel = den ? idxToBand(weightedIdx) : "A0";
 
-    // «Жёсткий» по порогам
+    // Жёсткие пороги
     const passReq = {A1:.70,A2:.65,B1:.60,B2:.60,C1:.55,C2:.50};
     let achieved="A0";
     for (const b of ["A1","A2","B1","B2","C1","C2"]) {
       if ((bandRates[b]?.rate || 0) >= passReq[b]) achieved = b;
     }
 
+    // Время/надёжность
     const totalSec = Math.floor((Date.now()-state.startedAt)/1000);
-    const answeredCount = Object.keys(state.answers).length;
-    const avgSec = totalSec / Math.max(1, answeredCount);
+    const answeredCount = Object.keys(state.answers).length || 1;
+    const avgSec = totalSec / answeredCount;
     let reliability = 1.0;
     if (avgSec < 4.0) reliability -= 0.25;
     if (!state.honesty) reliability -= 0.15;
     if (idk===0 && skipped===0 && wrong>correct) reliability -= 0.1;
     reliability = clamp(reliability,0,1);
 
+    // Нормализация суммы (для красивого 0..1)
     const maxRaw = QUESTIONS.length;
-    const norm = clamp((penalized + (QUESTIONS.length*0.33)) / (maxRaw+QUESTIONS.length*0.33), 0,1);
+    const normScore = clamp((penalized + (QUESTIONS.length*0.33)) / (maxRaw + QUESTIONS.length*0.33), 0, 1);
 
     return {
       achieved, weightedLevel, weightedIdx:+weightedIdx.toFixed(2),
       bandRates, penalized:+penalized.toFixed(2),
       correct, wrong, idk, skipped, total: QUESTIONS.length,
       totalSec, avgSec:+avgSec.toFixed(1), reliability:+reliability.toFixed(2),
-      norm:+norm.toFixed(2), details
+      norm:+normScore.toFixed(2), details
     };
   }
 
-  /* ========= 8) Завершение, отчёт и рекомендации ========= */
+  /* ========= 8) Завершение, отчёт ========= */
   async function finish(){
     saveTimeForCurrent();
     test.classList.add('hidden'); clearInterval(tickTimer);
     const report = scoreReport();
     showResult(report);
-    aiAudit(report).catch(()=>{ aiStatus.textContent = t('aiFetchError'); });
+    aiAudit(report).catch(()=>{ aiStatus.textContent = t('aiFetchError')||'AI: ошибка запроса'; });
   }
 
   function showResult(r){
     result.classList.remove('hidden');
     const levelBadges={
-      "A1": t('levelBadgeA1') || "Начальный",
-      "A2": t('levelBadgeA2') || "Элементарный",
-      "B1": t('levelBadgeB1') || "Средний",
-      "B2": t('levelBadgeB2') || "Уверенный средний",
-      "C1": t('levelBadgeC1') || "Продвинутый",
-      "C2": t('levelBadgeC2') || "Владение",
+      "A1": t('levelBadgeA1')||"Начальный",
+      "A2": t('levelBadgeA2')||"Элементарный",
+      "B1": t('levelBadgeB1')||"Средний",
+      "B2": t('levelBadgeB2')||"Уверенный средний",
+      "C1": t('levelBadgeC1')||"Продвинутый",
+      "C2": t('levelBadgeC2')||"Владение",
       "A0": t('belowA1') || "Ниже A1"
     };
 
     headline.innerHTML = `
       <div class="kpi">
-        <span>${t('weightedLevel') || 'Взвешенный уровень'}:</span>
+        <span>${t('weightedLevel')||'Взвешенный уровень'}:</span>
         <span class="v" style="margin-left:6px">${r.weightedLevel}</span>
         <span class="chip">${levelBadges[r.weightedLevel]||""}</span>
       </div>
       <div class="small muted" style="margin-top:6px">
-        ${(t('strictBand') || 'Жёсткий по порогам')}: <strong>${r.achieved}</strong> · ${t('weightedIndex')||'Индекс'} = ${r.weightedIdx ?? "-"}
+        ${(t('strictBand')||'Жёсткий по порогам')}: <strong>${r.achieved}</strong> · ${t('weightedIndex')||'Индекс'} = ${r.weightedIdx ?? "-"}
       </div>
     `;
 
     summaryBox.innerHTML = `
       <div class="grid">
-        <div class="kpi"><span>${t('scoreWithPenalty') || 'Баллы с антиугадыванием'}:</span> <span class="v">${r.penalized} / ${r.total}</span></div>
-        <div class="kpi"><span>${t('answersBreakdown') || 'Правильно / Ошибки / «Не знаю» / Пропущено'}:</span> <span class="v">${r.correct} / ${r.wrong} / ${r.idk} / ${r.skipped}</span></div>
-        <div class="kpi"><span>${t('time') || 'Время'}:</span> <span class="v">${fmtSec(r.totalSec)} (${t('timeAvg')||'ср.'} ${r.avgSec}s/${t('progressQ')||'вопр'})</span></div>
-        <div class="kpi"><span>${t('reliability') || 'Надёжность прохождения'}:</span> <span class="v">${(r.reliability*100).toFixed(0)}%</span></div>
+        <div class="kpi"><span>${t('scoreWithPenalty')||'Баллы с антиугадыванием'}:</span> <span class="v">${r.penalized} / ${r.total}</span></div>
+        <div class="kpi"><span>${t('answersBreakdown')||'Правильно / Ошибки / «Не знаю» / Пропущено'}:</span> <span class="v">${r.correct} / ${r.wrong} / ${r.idk} / ${r.skipped}</span></div>
+        <div class="kpi"><span>${t('time')||'Время'}:</span> <span class="v">${fmtSec(r.totalSec)} (${t('timeAvg')||'ср.'} ${r.avgSec}s/${t('progressQ')||'вопр'})</span></div>
+        <div class="kpi"><span>${t('reliability')||'Надёжность прохождения'}:</span> <span class="v">${(r.reliability*100).toFixed(0)}%</span></div>
       </div>`;
 
     bandTableBody.innerHTML='';
@@ -530,7 +496,7 @@
     if(r.weightedLevel==="C1"){recoLines.push("Стиль/регистр, точность формулировок, эссе 250–300 слов, устные презентации.");}
     if(r.weightedLevel==="C2"){recoLines.push("Поддержание уровня: дебаты, редактирование текстов, узкопрофильные материалы.");}
     Object.keys(r.bandRates).forEach(b=>{ if(need(b)) recoLines.push(`Уровень ${b}: дотянуть до целевого порога.`); });
-    if(r.reliability<0.7){recoLines.push(t('badReliabilityHint') || "Обнаружены признаки низкой надёжности. Рекомендуется пересдать в спокойных условиях.");}
+    if(r.reliability<0.7){recoLines.push(t('badReliabilityHint')||"Обнаружены признаки низкой надёжности. Рекомендуется пересдать в спокойных условиях.");}
     qs('#reco').innerHTML = `<ul>${recoLines.map(x=>`<li>${sanitize(x)}</li>`).join('')}</ul>`;
 
     reviewBtn.onclick = ()=>reviewAnswers();
@@ -553,8 +519,8 @@
       wrap.innerHTML = `<div class="level-tag">${q.level}</div><h3 style="margin-top:8px">${sanitize(q.q)}</h3>`;
       q.options.forEach((opt,i)=>{
         const lab=document.createElement('div'); lab.className='opt';
-        if(i===q.answerIdx) lab.classList.add('correct');
-        if(chosen!==undefined && i===chosen && chosen!==q.answerIdx) lab.classList.add('wrong');
+        if(i===q.answerIdx || (Array.isArray(q.correct)&&q.correct.includes(i))) lab.style.borderColor = '#1f8c5a';
+        if(chosen!==undefined && i===chosen && !(i===q.answerIdx || (Array.isArray(q.correct)&&q.correct.includes(i)))) lab.style.borderColor = '#9e2e2e';
         lab.textContent = opt;
         wrap.appendChild(lab);
       });
@@ -562,17 +528,14 @@
     });
     if(!document.getElementById('reviewBlock')){
       const sec=document.createElement('div'); sec.id='reviewBlock'; sec.className='result'; sec.style.marginTop='12px';
-      const h=document.createElement('h3'); h.textContent=t('review') || 'Просмотреть ответы';
+      const h=document.createElement('h3'); h.textContent=t('review')||'Просмотреть ответы';
       sec.appendChild(h); sec.appendChild(container); result.appendChild(sec);
     }
   }
 
   /* ========= 9) AI-аудит ========= */
   async function aiAudit(rawReport){
-    if(!AI_ENDPOINT || !AI_ENDPOINT.includes('/exec')) {
-      qs('#aiStatus').textContent = t('aiNotConnected');
-      return;
-    }
+    if(!AI_ENDPOINT || !AI_ENDPOINT.includes('/exec')) { qs('#aiStatus').textContent = t('aiNotConnected')||'AI не подключён'; return; }
     const meta = {
       version: "1.0",
       honesty: state.honesty,
@@ -587,35 +550,22 @@
     try {
       res = await fetch(AI_ENDPOINT, {
         method: "POST",
-        headers: { "Content-Type":"text/plain" }, // без preflight
+        headers: { "Content-Type":"text/plain" },
         body: JSON.stringify({ intent: "final-assess", data: { rawReport, meta } })
       });
     } catch(e){
-      qs('#aiStatus').textContent = t('aiFetchError');
+      qs('#aiStatus').textContent = t('aiFetchError')||'AI: ошибка запроса';
       return;
     }
 
     let payload;
     try { payload = await res.json(); }
-    catch(e){ qs('#aiStatus').textContent = t('aiJsonParseError'); return; }
+    catch(e){ qs('#aiStatus').textContent = t('aiJsonParseError')||'AI: некорректный JSON'; return; }
 
     const out = payload?.output ?? payload;
-
-    const pretty = (x) => {
-      if (x == null) return "unknown";
-      if (typeof x === "string") return x;
-      try { return JSON.stringify(x).slice(0, 300); } catch (_) { return String(x); }
-    };
-
-    if(!res.ok){
-      qs('#aiStatus').textContent = (t('aiHttpError')||'AI-аудит HTTP {{STATUS}}: {{MESSAGE}}')
-        .replace('{{STATUS}}', String(res.status))
-        .replace('{{MESSAGE}}', pretty(out?.error || out));
-      return;
-    }
-    if(!out || out.error){
-      qs('#aiStatus').textContent = (t('aiResponseError')||'AI-аудит: {{MESSAGE}}')
-        .replace('{{MESSAGE}}', pretty(out?.error || "ошибка ответа"));
+    if(!res.ok || !out || out.error){
+      const msg = out?.error || JSON.stringify(out).slice(0,200);
+      qs('#aiStatus').textContent = (t('aiHttpError')||'AI-аудит ошибка: ') + msg;
       return;
     }
 
@@ -640,13 +590,9 @@
   (async function boot(){
     await initI18n();
     await initQuestions();
-
-    // порядок вопросов
     order = QUESTIONS.map((_,i)=>i);
     total = order.length;
-
-    // прогресс-лейбл на старте
-    qs('#progressBadge').textContent = `${t('progressQ') || 'Вопрос'} 1 / ${total}`;
+    qs('#progressBadge').textContent = `${t('progressQ')||'Вопрос'} 1 / ${total}`;
   })();
 </script>
 </body>
